@@ -16,7 +16,7 @@ Trial Prescreening Agent helps oncology research coordinators start with a trial
 - Citation, observation-date, numeric-unit, conflict and stale-version checks with inspectable patient findings.
 - Responsive coordinator UI with Trials, Worklist, Archive and Activity views.
 
-The repeatable demo uses the seeded NCT06116682 snapshot. Registry import creates an unapproved draft using live structured extraction; unchanged imports preserve the existing checklist. Reviewed atomic AND/OR extraction, generalized clinical evidence interpretation, and the gap/inbox/reply workflow remain unfinished. Model outputs are proposals, not final eligibility decisions.
+The repeatable demo uses the seeded NCT06116682 snapshot. Registry import creates an unapproved draft using live structured extraction; unchanged imports preserve the existing checklist. New live extraction supplies atomic condition policies and reviewable AND/OR trees. Full-trial decomposition review, generalized clinical evidence interpretation, and the gap/inbox/reply workflow remain unfinished. Model outputs are proposals, not final eligibility decisions.
 
 ## Demo
 
@@ -78,7 +78,7 @@ Note: with npm 10.9.2, `npm install` without the lockfile crashes in npm's depen
 
 ### Evidence policy and runtime limits
 
-Numeric guards currently cover the three reviewed demo thresholds (ANC, hemoglobin, platelets). Other positive fixture findings require exact matches to a closed, hand-authored synthetic assertion catalog and unchanged rule definitions. Unrecognized assertions and rules require review. This is not a generalized clinical reasoning engine; live prose citations alone do not establish eligibility. Stale proposed failures require review, while stale proposed matches become missing information. Visit checks remain separately pending.
+Historical demo rules retain their three reviewed numeric thresholds (ANC, hemoglobin, platelets). New atomic rules support deterministic AND/OR composition, numeric operators, explicit unit conversions, laboratory upper-reference-limit multiples and assessment-relative observation windows. Unsupported units, missing ranges, event-relative windows without an event date and conflicting measurements require review. Coordinators can inspect/edit the expression and per-condition policies before approval. Extraction and draft saves reject missing registry source text; source coverage does not establish semantic correctness. Other positive fixture findings require exact matches to a closed, hand-authored synthetic assertion catalog and unchanged rule definitions. Unrecognized assertions and rules require review. This is not a generalized clinical reasoning engine; live prose citations alone do not establish eligibility. Stale proposed failures require review, while stale proposed matches become missing information. Visit checks remain separately pending.
 
 Editing a checklist changes its revision; approving locks it and queues the cohort. Creating a new draft makes previous results stale. Fixture replay intentionally rejects changed rules; use live mode for edited inputs, which may still require manual interpretation. Reimporting an NCT ID detects screening-relevant changes and creates an unapproved version while retaining old snapshots and results. Background registry-change detection is not implemented. Registry import failure, unchanged/changed content, source-quote validation and version races are covered by tests; arbitrary full-trial live extraction accuracy remains unverified.
 

@@ -18,7 +18,15 @@ export interface CheckedRule {
   citations: RuleOutput["citations"];
   proposedStatus: string | null;
   provenanceVerified: boolean;
-  support: "numeric" | "synthetic_assertion" | "none";
+  support: "numeric" | "compound" | "synthetic_assertion" | "none";
+  conditions?: {
+    nodeId: string;
+    condition: string;
+    status: "met" | "not_met" | "unknown";
+    review: boolean;
+    reason: string;
+    citations: RuleOutput["citations"];
+  }[];
 }
 export interface ScreeningResult {
   status: ScreeningStatus;

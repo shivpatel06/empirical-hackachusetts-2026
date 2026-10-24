@@ -18,6 +18,7 @@ import { safeAiError } from "../ai/contracts";
 import { demoChecklist, demoTrial, DEMO_TIME } from "../ai/fixtures";
 import { registryTrial, type RegistryTrial } from "../trials/registry";
 import { checkScreening, prefilter } from "./guardrails";
+import { validateCriteriaSource } from "../../lib/criteria";
 
 type Row = Record<string, any>; // SQLite rows are mapped into validated domain contracts at the boundary.
 export class WorkflowError extends Error {
@@ -344,6 +345,14 @@ export class WorkflowStore {
       const trial = this.db
         .prepare("SELECT criteria_text FROM trials WHERE id=?")
         .get(current.trialId) as Row;
+      try {
+        validateCriteriaSource(trial.criteria_text, valid.rules);
+      } catch {
+        throw new WorkflowError(
+          "Every registry criterion and exception must be retained in the draft source quotes.",
+          400,
+        );
+      }
       if (
         valid.rules.some(
           (r) =>

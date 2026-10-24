@@ -31,6 +31,15 @@ This implementation plan was prepared by Codex from the user-selected design; wh
 - Current suite: 62 tests pass, typecheck and production build pass. Migration 0003 applied to the existing local database without resetting history. Browser reimport of NCT06116682 reached the real registry and preserved approved v2. New/changed import tests use a controlled adapter; they do not establish full-trial live extraction accuracy.
 - Tasks 1.2 and 1.4 remain partial: atomic compound-rule review and generalized evidence policies are still required. No new Kiro interaction occurred in this checkpoint.
 
+## Atomic criteria checkpoint (October 24, 2026, Codex)
+
+- New live extraction requires one source-bound evidence policy per atomic expression leaf. Schema validation rejects missing/duplicate policies and mixed whole-rule/leaf thresholds. Mechanical source coverage rejects omitted criteria and exceptions on extraction, import and draft saves.
+- Added a coordinator expression editor (AND/OR, qualifying condition, measurement/operator/unit/reference range and observation window) and per-condition screening reasons.
+- Added independent three-valued AND/OR evaluation for arbitrary approved numeric policies, explicit unit conversion, reference-upper multiples, dates, conflict checks and unsupported-evidence review. Historical fixture interpretation remains separately scoped.
+- 74 tests pass, including three additional 100-case properties. Typecheck and production build pass. A real three-paragraph extraction/screening smoke passed with nested consent AND/OR logic and exact source coverage. This is not full-trial semantic validation.
+- Browser checked numeric policy save and nested AND/OR rendering in an isolated local database. Existing approved demo records were not edited.
+- Phase 1 remains active: review the complete trial decomposition and resolve the remaining unsupported clinical/event-date evidence workflow before claiming the full phase. Tasks 1.2 and 1.4 remain unchecked.
+
 ## Task Dependency Graph
 
 ```mermaid

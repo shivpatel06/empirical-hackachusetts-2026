@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import type { CheckedRule, PatientView, WorkflowView } from "../lib/workflow";
 import type { ChecklistDraft } from "../lib/schemas/ai";
 
+import { CriterionExpression } from "./criterion-expression";
+
 type Tab = "Trials" | "Worklist" | "Archive" | "Activity";
 const labels = {
   likely_match: "Potential match",
@@ -600,6 +602,20 @@ export function Workspace({ initial }: { initial: WorkflowView }) {
                             ORIGINAL TRIAL CRITERION
                           </span>
                           <blockquote>{r.sourceQuote}</blockquote>
+                          <CriterionExpression
+                            rule={r}
+                            onChange={
+                              edit
+                                ? (updated) =>
+                                    setEdit({
+                                      ...edit,
+                                      rules: edit.rules.map((item) =>
+                                        item.id === r.id ? updated : item,
+                                      ),
+                                    })
+                                : undefined
+                            }
+                          />
                           <span className="eyebrow">EVIDENCE TO LOOK FOR</span>
                           <p>{r.evidenceDescription}</p>
                         </div>
@@ -1066,6 +1082,25 @@ function Evidence({
       </summary>
       <div className="evidence-body">
         <p>{rule.reason}</p>
+        {rule.conditions && (
+          <div className="atomic-findings">
+            {rule.conditions.map((condition) => (
+              <div key={condition.nodeId} className="atomic-condition">
+                <strong>
+                  {condition.condition} ·{" "}
+                  {condition.status === "met"
+                    ? "Supported"
+                    : condition.status === "not_met"
+                      ? "Not met"
+                      : condition.review
+                        ? "Review"
+                        : "Missing evidence"}
+                </strong>
+                <p>{condition.reason}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {rule.citations.map((citation, index) => {
           const line = patient.chart.find((l) => l.id === citation.lineId);
           return (

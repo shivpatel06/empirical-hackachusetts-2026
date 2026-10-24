@@ -3,6 +3,7 @@ import type { WorkflowStore } from "../workflow/store";
 import { WorkflowError } from "../workflow/store";
 import { fetchTrial, type RegistryTrial } from "./registry";
 import { validateDraft } from "../../lib/schemas/ai";
+import { validateCriteriaSource } from "../../lib/criteria";
 
 export async function importTrial(
   store: WorkflowStore,
@@ -36,6 +37,14 @@ export async function importTrial(
     );
   }
   validateSourceQuotes(trial, draft.rules);
+  try {
+    validateCriteriaSource(trial.criteriaText, draft.rules);
+  } catch {
+    throw new WorkflowError(
+      "Extraction omitted registry source text. Nothing was imported; review or retry extraction.",
+      422,
+    );
+  }
   return store.persistImport(trial, draft, mode, captured);
 }
 export function validateSourceQuotes(

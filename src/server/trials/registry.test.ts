@@ -34,13 +34,32 @@ function newTrial() {
     "Second synthetic test protocol";
   return raw;
 }
+function changedDraft(clause: string) {
+  const draft = structuredClone(demoChecklist);
+  draft.rules.push({
+    ...structuredClone(draft.rules[0]!),
+    id: "new_clause",
+    sourceQuote: clause,
+    qualification: clause,
+    expression: {
+      rootId: "new",
+      nodes: [
+        { id: "new", operator: "condition", childIds: [], condition: clause },
+      ],
+    },
+  });
+  return draft;
+}
 function fakeLive(): AiAdapter {
   const adapter = new FixtureAdapter();
   return {
     ...adapter,
     mode: "live",
     label: "Test mock",
-    extract: async () => structuredClone(demoChecklist),
+    extract: async (trial) =>
+      trial.criteriaText.endsWith("New protocol clause.")
+        ? changedDraft("New protocol clause.")
+        : structuredClone(demoChecklist),
     screen: adapter.screen.bind(adapter),
     runGapInvestigation: adapter.runGapInvestigation.bind(adapter),
   };
@@ -254,7 +273,7 @@ describe("transactional import and trial switching", () => {
     const adapter = fakeLive();
     adapter.extract = async () => {
       store.save(1, 1, demoChecklist);
-      return demoChecklist;
+      return changedDraft("Updated.");
     };
     await expect(
       importTrial(

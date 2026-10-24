@@ -4,9 +4,11 @@ import {
   type ChecklistInput,
   type Patient,
   type ChartLine,
+  validateDraft,
 } from "../../lib/schemas/ai";
 import type { CheckedRule, ScreeningResult } from "../../lib/workflow";
 import { demoChecklist, demoTrial } from "../ai/fixtures";
+import { checkAtomicRule } from "./atomic";
 
 const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
 export function compare(
@@ -45,6 +47,7 @@ export function checkScreening(
     !Number.isFinite(now.getTime())
   )
     throw new Error("Approved nonempty checklist and valid clock required");
+  validateDraft({ rules: checklist.rules });
   const parsed = raw.map((value) => ruleOutputSchema.safeParse(value));
   const unknownOutput = parsed.some(
     (p) => !p.success || !checklist.rules.some((r) => r.id === p.data.ruleId),
@@ -107,6 +110,8 @@ export function checkScreening(
       cited.push(line);
     }
     base.provenanceVerified = true;
+    if (rule.assessment)
+      return checkAtomicRule(patient, rule, cited, base, now);
     const current = (line: ChartLine) => {
       const observed = Date.parse(line.observedAt),
         ingested = Date.parse(line.ingestedAt);
