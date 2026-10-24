@@ -5,12 +5,27 @@ import type {
   RuleOutput,
   TrialInput,
 } from "../../lib/schemas/ai";
-import type { GapTrail } from "./gap-tools";
+import type { AgentUsage, OutreachDraft } from "../../lib/journey";
+import type { ScreeningResult } from "../../lib/workflow";
+import type { GapAction, GapTrail } from "./gap-tools";
 
 export interface UnresolvedRule {
   id: string;
   qualification: string;
   evidenceDescription: string;
+}
+
+export interface AgentObserver {
+  step(action: Omit<GapAction, "tool"> & { tool: string }): void;
+  usage?(usage: AgentUsage): void;
+}
+export interface OutreachInput {
+  patient: Patient;
+  trialTitle: string;
+  trialId: string;
+  result: ScreeningResult;
+  reviewNote: string;
+  language: string;
 }
 
 export interface AiAdapter {
@@ -21,7 +36,12 @@ export interface AiAdapter {
   runGapInvestigation(
     patient: Patient,
     unresolvedRules: UnresolvedRule[],
+    observer?: AgentObserver,
   ): Promise<GapTrail>;
+  draftOutreach?(
+    input: OutreachInput,
+    observer?: AgentObserver,
+  ): Promise<OutreachDraft>;
 }
 
 /** Only this wrapper can carry an already-sanitized provider label across

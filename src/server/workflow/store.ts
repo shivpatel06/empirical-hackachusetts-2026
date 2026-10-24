@@ -16,6 +16,7 @@ import type {
 import type { AiAdapter } from "../ai/contracts";
 import { safeAiError } from "../ai/contracts";
 import { demoChecklist, demoTrial, DEMO_TIME } from "../ai/fixtures";
+import demoSnapshot from "../../../fixtures/trial-prescreening/NCT06116682.json";
 import { registryTrial, type RegistryTrial } from "../trials/registry";
 import { checkScreening, prefilter } from "./guardrails";
 import { validateCriteriaSource } from "../../lib/criteria";
@@ -193,6 +194,40 @@ export class WorkflowStore {
       return !unchanged || reextract;
     })();
   }
+  /** An explicit fixture draft, preserving previous versions and all patient history. */
+  prepareWalkthrough() {
+    if (
+      this.db
+        .prepare(
+          "SELECT id FROM events WHERE state IN ('queued','processing') LIMIT 1",
+        )
+        .get() ||
+      this.db
+        .prepare(
+          "SELECT id FROM agent_runs WHERE state IN ('queued','running') LIMIT 1",
+        )
+        .get()
+    )
+      throw new WorkflowError(
+        "Wait for current work to finish before preparing the walkthrough.",
+      );
+    const trial = registryTrial(
+      demoSnapshot,
+      demoTrial.id,
+      this.clock().toISOString(),
+    );
+    this.persistImport(
+      trial,
+      demoChecklist,
+      "fixture",
+      this.importRevision(trial.id),
+      true,
+    );
+    this.audit(
+      "Fixture walkthrough prepared",
+      "Authored trial snapshot and checklist loaded as a new draft. Coordinator approval is required; patient and action history retained.",
+    );
+  }
   private audit(
     action: string,
     detail: string,
@@ -252,7 +287,7 @@ export class WorkflowStore {
         .map((l) => JSON.parse(l.payload_json)),
     });
   }
-  private queue(checklist: StoredChecklist) {
+  private queue(checklist: StoredChecklist, patientId?: string) {
     if (checklist.state !== "approved")
       throw new WorkflowError(
         "Approve the current checklist before screening.",
@@ -279,20 +314,22 @@ export class WorkflowStore {
     for (const p of this.db
       .prepare("SELECT id,revision FROM patients")
       .all() as Row[]) {
+      if (patientId && p.id !== patientId) continue;
       const payload: Payload = {
         patientId: p.id,
         trialId: checklist.trialId,
         checklistId: checklist.id,
         chartRevision: p.revision,
-        mode: this.mode,
-        assessmentAt: this.assessmentAt(),
+        mode: checklist.mode,
+        assessmentAt:
+          checklist.mode === "fixture" ? DEMO_TIME : this.clock().toISOString(),
       };
       count += this.db
         .prepare(
           "INSERT OR IGNORE INTO events (kind,dedup_key,payload_json,state,created_at) VALUES ('screen',?,?,'queued',?)",
         )
         .run(
-          `${p.id}:${p.revision}:${checklist.id}:${this.mode}`,
+          `${p.id}:${p.revision}:${checklist.id}:${checklist.mode}`,
           JSON.stringify(payload),
           this.clock().toISOString(),
         ).changes;
@@ -419,6 +456,16 @@ export class WorkflowStore {
           })(),
       ),
     )();
+  }
+  screenPatient(patientId: string, priorScreeningId: number) {
+    const prior = this.db
+      .prepare(
+        "SELECT checklist_id FROM screenings WHERE id=? AND patient_id=?",
+      )
+      .get(priorScreeningId, patientId) as Row | undefined;
+    const checklist = prior ? this.checklist(prior.checklist_id) : null;
+    if (!checklist) throw new WorkflowError("Screening checklist not found.");
+    return this.queue(checklist, patientId);
   }
   retry() {
     return this.db.transaction(() => {

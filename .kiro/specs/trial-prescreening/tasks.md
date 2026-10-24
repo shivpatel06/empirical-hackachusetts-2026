@@ -206,13 +206,13 @@ The same dependency order is expressed below as sequential execution waves. Each
   - _Requirements: R4_
   - _Properties: 9, 10_
 
-- [ ] 2.2 Add inbox actions and server-enforced approvals
+- [x] 2.2 Add inbox actions and server-enforced approvals
   - Add inbox actions for request approval, questions, and match review with reasons.
   - Gate: server rejects unsupported/stale actions; repeat approval cannot duplicate dispatch; new test proposals remain simulated drafts.
   - _Requirements: R5_
   - _Properties: 11, 12_
 
-- [ ] 2.3 Implement synthetic reply ingestion and automatic re-screening
+- [x] 2.3 Implement synthetic reply ingestion and automatic re-screening
   - Implement synthetic reply ingestion and automatic re-screening.
   - Gate: a result adds one append-only chart line, queues one effective recheck, resolves only supported rules, and never self-loops.
   - _Requirements: R2, R4, R7_
@@ -223,13 +223,13 @@ The same dependency order is expressed below as sequential execution waves. Each
   - Gate: repeatable browser walkthrough with evidence, pending visit checks, clear synthetic/mode labels, and an actual OpenAI Agents SDK tool run; record actual output and failures.
   - _Requirements: R1, R2, R3, R4, R5_
 
-- [ ] 3.1 Add outreach draft generation, languages, and review
+- [x] 3.1 Add outreach draft generation, languages, and review
   - Add physician-note and patient-summary draft generation, language selection, and review/edit/approve.
   - Gate: synthetic doctor delivery requires current approval; patient summary is care-team handoff only; translations show draft status.
   - _Requirements: R6_
   - _Properties: 11, 12_
 
-- [ ] 3.2 Add outreach stage tracking with human-entered outcomes
+- [x] 3.2 Add outreach stage tracking with human-entered outcomes
   - Add outreach stage tracking with human-entered outcomes and terminal reasons.
   - Gate: invalid transitions are rejected and trial closure stops pending delivery without losing history.
   - _Requirements: R6_
@@ -292,3 +292,12 @@ Start with 0.1–0.4 and Phase 1, then prove the Phase 2 workflow before polishi
 - Main workspace now displays persisted candidates, source evidence, current/stale results, archive and activity. The full existing trial/checklist editor remains at `/criteria`; completion routes into Empirical Worklist. Browser-local prototype screening and messaging are not used.
 - Inbox and Outreach expose their unfinished status; no new approval, gap-agent or messaging backend capability is implied. Tasks 2.x/3.x remain pending.
 - Shared working-tree suite: 82 tests pass; typecheck and production build pass. Browser checked isolated fixture approval, all six outcomes, rejected foreign citation, archive, palette/menu navigation and 1440px/390px layouts. This checkpoint adds four UI-presentation tests and no Kiro implementation claim.
+
+## Full journey checkpoint (October 24, 2026, Codex)
+
+- Connected persisted gap jobs and actual tool callbacks to the patient UI, Inbox, revision-bound approvals, synthetic replies and automatic patient re-screening. Added a bounded Luna SDK outreach agent with a verified-evidence tool, structured drafts and citation validation. Fixtures are explicitly labeled; no automatic model escalation or silent fallback.
+- Simplified the main workspace to patients, inbox and outreach. The patient view shows its next action and recent agent activity; evidence, earlier runs and demo controls expand on demand.
+- Completed the fixture browser journey for Patient 03 through two approved requests, authored replies, guarded re-screening, coordinator review, Spanish patient-summary/physician drafts, separate simulated approvals and a human-entered doctor response. Automated tests cover ordered outcomes through enrollment, reminder deduplication, stale/duplicate approvals, late outputs and provider failure.
+- 105 tests pass; production build and TypeScript pass. SDK outreach tests invoke the actual SDK runner with a deterministic model and reject foreign citations. These are not live Luna-quality results.
+- Tasks 2.2, 2.3, 3.1 and 3.2 are checked for their implemented synthetic-demo gates. Full live agentic rehearsal (2.4/4.2), arbitrary changed-criteria live screening, unattended nightly scheduling, clinical/translation validation and deployment remain pending. Earlier provider verification found exhausted API credits; no paid requests were made in this checkpoint.
+- Setup and the rehearsal sequence are documented in `docs/demo-journey.md`. Attribution: this implementation and verification were performed by Codex; no additional Kiro implementation or native-hook benefit is claimed.

@@ -19,7 +19,7 @@ Three repeatable demo moments anchor the build: a gap investigation that selects
 - Single Next.js/TypeScript app: React UI plus Next.js route handlers.
 - Persistent `next start` Node server hosting SQLite, the event worker, and server-sent updates.
 - SQLite for storage; Zod as the shared validation layer for tool arguments, structured model output, and API request bodies.
-- OpenAI via `@openai/agents`: `run()` for the gap-investigation loop only; structured single calls for extraction and per-rule screening.
+- OpenAI via `@openai/agents`: `run()` for gap investigation and bounded outreach drafting; structured single calls for extraction and per-rule screening.
 - ClinicalTrials.gov API v2 adapter for trial data.
 
 ### Thin internal AI interface
@@ -62,7 +62,7 @@ The following implementation constraints are grounded in the current official `@
 
 - **Structured calls vs agent loop split** (reinforcing the existing thin AI interface):
   - `extract(trial)` and `screen(patient, checklist)` are single structured calls, NOT agent loops. Implement each with a Zod v4 `outputType` schema and `maxTurns: 1` and no tools. The model only proposes per-rule findings; code decides everything after.
-  - `runGapInvestigation` is the only path using the Agents SDK `run()` loop, with the six patient-scoped tools defined via `tool({ parameters: zodSchema, execute })`.
+  - `runGapInvestigation` uses the Agents SDK `run()` loop, with the six patient-scoped tools defined via `tool({ parameters: zodSchema, execute })`.
 
 - **Six-tool-action cap enforcement**: The SDK's `maxTurns` counts TURNS, and a single turn can execute multiple tool calls, so `maxTurns` is NOT a tool-call counter. The authoritative cap is a per-run counter held in the run context object that every tool increments; when it reaches six, further tool execution is refused and the backend synthesizes the forced `finish` summary of unresolved items. Set `maxTurns` as a generous backstop only (for example ~12) and set `resetToolChoice: true` to avoid tool-choice lock. The run result history provides the Activity trail.
 
@@ -253,3 +253,11 @@ Exercise the three demo moments (gap investigation with tool selection, arriving
 ### Provider smoke tests
 
 Keep provider smoke tests separate from deterministic tests. They verify real OpenAI access and a real model-selected tool run, record the adapter/model mode and actual outcomes (latency, fixture outcomes, coordinator corrections when measured), and are not mixed into the deterministic property or guardrail suites. The fixture adapter path is explicitly not evidence of real agent behavior.
+
+## Implemented demo journey extension (October 24, Codex)
+
+The persisted journey uses migration 0004 (`agent_runs`, `agent_steps`, `journey_items`, `outreach_cases`) and `/api/journey`. The worker saves tool-execution callbacks immediately; the UI polls server-owned state every two seconds. This replaces the proposed server-sent update transport for the single-process MVP. Successful gap runs retain model/response receipts and successful agent calls retain token usage. Provider failures stop visibly and require explicit retry.
+
+After coordinator verification, a separate bounded Luna SDK agent calls `read_verified_case` and emits structured physician/summary drafts. It can read supported evidence but cannot send or record outcomes. Drafts require separate current-revision approvals; chart/checklist changes invalidate earlier actions. Simulated replies append evidence and queue only the affected patient. Authored fixture replies support Patient 03's two stale records; arbitrary inputs require live evaluation.
+
+Follow-up outcomes require human notes and ordered transitions. Due reminder drafts are evaluated by the active worker and demo clock; autonomous nightly registry/schedule polling remains proposed. All delivery is simulated, all patient summaries are unvalidated care-team drafts, and fixture execution is not evidence of live model reasoning.

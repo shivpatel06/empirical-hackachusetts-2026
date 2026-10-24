@@ -1,7 +1,11 @@
 import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { checklistDraftSchema } from "../../../lib/schemas/ai";
-import { workflow, drainQueue } from "../../../server/workflow/runtime";
+import {
+  workflow,
+  workflowView,
+  drainQueue,
+} from "../../../server/workflow/runtime";
 import { getServerEnv } from "../../../server/env";
 import { isSameOrigin } from "../../../server/workflow/request";
 import { importTrial } from "../../../server/trials/import";
@@ -11,6 +15,7 @@ import { WorkflowError } from "../../../server/workflow/store";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const action = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("prepare_walkthrough") }).strict(),
   z
     .object({
       action: z.literal("reextract"),
@@ -55,7 +60,7 @@ const action = z.discriminatedUnion("action", [
 ]);
 export async function GET() {
   try {
-    const view = workflow().view();
+    const view = workflowView();
     after(drainQueue);
     return NextResponse.json(view, {
       headers: { "Cache-Control": "no-store" },
@@ -81,7 +86,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = action.parse(await request.json()),
       store = workflow();
-    if (body.action === "reextract")
+    if (body.action === "prepare_walkthrough") store.prepareWalkthrough();
+    else if (body.action === "reextract")
       await importTrial(
         store,
         body.trialId,
@@ -103,7 +109,7 @@ export async function POST(request: NextRequest) {
     else if (body.action === "screen") store.screen();
     else store.retry();
     after(drainQueue);
-    return NextResponse.json(store.view());
+    return NextResponse.json(workflowView());
   } catch (error) {
     return NextResponse.json(
       {

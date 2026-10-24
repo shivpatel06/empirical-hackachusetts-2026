@@ -4,11 +4,12 @@ import "../components/empirical/styles/app.css";
 import "../components/empirical/styles/lists.css";
 import "../components/empirical/styles/case.css";
 import "../components/empirical/styles/integration.css";
-import { workflow } from "../server/workflow/runtime";
+import "../components/empirical/styles/journey.css";
+import { workflowView } from "../server/workflow/runtime";
 export const dynamic = "force-dynamic";
 export default function Home() {
   try {
-    return <Workspace initial={workflow().view()} />;
+    return <Workspace initial={workflowView()} />;
   } catch {
     return (
       <main className="setup">

@@ -23,7 +23,7 @@ import {
   statusLabels,
   visiblePatients,
 } from "./presentation";
-import { EvidenceWorkspace } from "./evidence";
+import { PatientJourney, JourneyQueue } from "./journey";
 
 type Page =
   | "Overview"
@@ -32,7 +32,7 @@ type Page =
   | "Outreach"
   | "Archive"
   | "Activity";
-const NAV: Page[] = ["Overview", "Worklist", "Inbox", "Outreach", "Activity"];
+const NAV: Page[] = ["Overview", "Inbox", "Outreach"];
 export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
   const [view, setView] = useState(initial);
   const [page, setPage] = useState<Page>("Overview");
@@ -132,7 +132,11 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
       mainRef.current?.querySelector<HTMLElement>("h1")?.focus(),
     );
   };
-  async function act(body: object, message: string) {
+  async function act(
+    body: object,
+    message: string,
+    endpoint = "/api/workflow",
+  ) {
     if (busyRef.current) return;
     busyRef.current = true;
     requestEpoch.current++;
@@ -140,7 +144,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
     setError("");
     setNotice("");
     try {
-      const response = await fetch("/api/workflow", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -169,7 +173,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
     filter,
     sort,
   );
-  const next = visiblePatients(view.patients, "worklist")[0];
+
   const openCase = (id: string) => {
     setSelected(id);
     setNotice("");
@@ -200,11 +204,13 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
                 <li key={item}>
                   <button
                     className="tab-link"
-                    data-label={item}
+                    data-label={item === "Overview" ? "Patients" : item}
                     aria-current={page === item ? "page" : undefined}
                     onClick={() => go(item)}
                   >
-                    <span className="tab-link-text">{item}</span>
+                    <span className="tab-link-text">
+                      {item === "Overview" ? "Patients" : item}
+                    </span>
                   </button>
                 </li>
               ))}
@@ -237,8 +243,8 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
           <span>Synthetic patient data · Not for clinical use</span>
           <span>
             {view.mode === "fixture"
-              ? "Fixture simulation · No AI calls"
-              : "Live AI · Synthetic records"}
+              ? "Screening: fixture simulation"
+              : "Screening: live AI · Synthetic records"}
           </span>
         </div>
         {(error || connectionError) && (
@@ -267,17 +273,19 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
           </div>
         )}
         {patient ? (
-          <EvidenceWorkspace
-            key={`${patient.id}:${patient.screening?.id}`}
+          <PatientJourney
+            key={patient.id}
             patient={patient}
             view={view}
+            busy={busy}
+            act={(body, message) => act(body, message, "/api/journey")}
             onBack={() => setSelected(null)}
           />
         ) : (
           <>
             <header className="page-head page-head--overview">
               <h1 className="page-title" tabIndex={-1}>
-                {page}
+                {page === "Overview" ? "Patients" : page}
               </h1>
               <div
                 className="tabs trial-tabs"
@@ -317,72 +325,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
               page === "Worklist" ||
               page === "Archive") && (
               <>
-                <div className={page === "Overview" ? "overview-grid" : ""}>
-                  {page === "Overview" && (
-                    <aside
-                      className="overview-rail"
-                      aria-label="Workflow and next step"
-                    >
-                      <section className="feature">
-                        <p className="feature-kicker">Trial prescreening</p>
-                        <h2 className="feature-title">
-                          Evidence before decisions.
-                        </h2>
-                        <ol className="feature-steps">
-                          <li>
-                            <span className="fs-num">1</span>
-                            <span>
-                              <strong>Criteria</strong>
-                              <span>
-                                {view.checklist
-                                  ? `Version ${view.checklist.version} · ${view.checklist.state}`
-                                  : "Import a trial to begin"}
-                              </span>
-                            </span>
-                          </li>
-                          <li>
-                            <span className="fs-num">2</span>
-                            <span>
-                              <strong>Evidence</strong>
-                              <span>
-                                {current.length} current results ·{" "}
-                                {view.patients.length} patients
-                              </span>
-                            </span>
-                          </li>
-                          <li className="fs-human">
-                            <span className="fs-num">3</span>
-                            <span>
-                              <strong>Review</strong>
-                              <span>Source, dates and unresolved checks</span>
-                            </span>
-                          </li>
-                        </ol>
-                        <a
-                          className="btn btn--primary feature-btn"
-                          href="/criteria"
-                        >
-                          {approved
-                            ? "Inspect trial criteria"
-                            : "Review checklist"}{" "}
-                          <span aria-hidden="true">→</span>
-                        </a>
-                      </section>
-                      {next && (
-                        <button
-                          className="next-card card"
-                          onClick={() => openCase(next.id)}
-                        >
-                          <span className="next-label">Next visit</span>
-                          <span className="next-main">
-                            <strong>{patientName(next.id)}</strong> ·{" "}
-                            {formatDate(next.nextVisit)}
-                          </span>
-                          <span aria-hidden="true">→</span>
-                        </button>
-                      )}
-                    </aside>
-                  )}
+                <div>
                   <section
                     className="cand-section"
                     aria-label="Patient candidates"
@@ -399,63 +342,66 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
                           ` · ${current.filter((p) => currentStatus(p) === "likely_match").length} potential ${current.filter((p) => currentStatus(p) === "likely_match").length === 1 ? "match" : "matches"}`}
                       </span>
                     </div>
-                    <div className="cand-controls">
-                      <div
-                        className="tabs tabs--filters"
-                        role="group"
-                        aria-label="Status filter"
-                      >
-                        <button
-                          aria-pressed={filter === "all"}
-                          onClick={() => setFilter("all")}
+                    <details className="journey-filters">
+                      <summary>Search & filter patients</summary>
+                      <div className="cand-controls">
+                        <div
+                          className="tabs tabs--filters"
+                          role="group"
+                          aria-label="Status filter"
                         >
-                          All
-                        </button>
-                        {Object.entries(statusLabels)
-                          .filter(([key]) =>
-                            page === "Archive"
-                              ? key === "ruled_out"
-                              : page === "Worklist"
-                                ? key !== "ruled_out"
-                                : true,
-                          )
-                          .map(([key, label]) => (
-                            <button
-                              key={key}
-                              aria-pressed={filter === key}
-                              onClick={() => setFilter(key)}
-                            >
-                              {label}
-                            </button>
-                          ))}
+                          <button
+                            aria-pressed={filter === "all"}
+                            onClick={() => setFilter("all")}
+                          >
+                            All
+                          </button>
+                          {Object.entries(statusLabels)
+                            .filter(([key]) =>
+                              page === "Archive"
+                                ? key === "ruled_out"
+                                : page === "Worklist"
+                                  ? key !== "ruled_out"
+                                  : true,
+                            )
+                            .map(([key, label]) => (
+                              <button
+                                key={key}
+                                aria-pressed={filter === key}
+                                onClick={() => setFilter(key)}
+                              >
+                                {label}
+                              </button>
+                            ))}
+                        </div>
+                        <div className="cand-tools">
+                          <label className="sr-only" htmlFor="patient-search">
+                            Search candidates
+                          </label>
+                          <input
+                            className="input"
+                            id="patient-search"
+                            type="search"
+                            placeholder="Search patients"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                          />
+                          <label className="sr-only" htmlFor="patient-sort">
+                            Sort candidates
+                          </label>
+                          <select
+                            className="select"
+                            id="patient-sort"
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value)}
+                          >
+                            <option value="visit">Next visit</option>
+                            <option value="name">Name</option>
+                            <option value="status">Status</option>
+                          </select>
+                        </div>
                       </div>
-                      <div className="cand-tools">
-                        <label className="sr-only" htmlFor="patient-search">
-                          Search candidates
-                        </label>
-                        <input
-                          className="input"
-                          id="patient-search"
-                          type="search"
-                          placeholder="Search patients"
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                        />
-                        <label className="sr-only" htmlFor="patient-sort">
-                          Sort candidates
-                        </label>
-                        <select
-                          className="select"
-                          id="patient-sort"
-                          value={sort}
-                          onChange={(e) => setSort(e.target.value)}
-                        >
-                          <option value="visit">Next visit</option>
-                          <option value="name">Name</option>
-                          <option value="status">Status</option>
-                        </select>
-                      </div>
-                    </div>
+                    </details>
                     {rows.length ? (
                       <ul className="list cand-list">
                         {rows.map((p, i) => (
@@ -588,30 +534,8 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
               </>
             )}
             {page === "Activity" && <Activity view={view} />}
-            {page === "Inbox" && (
-              <section className="card integration-empty">
-                <h2>Coordinator approvals</h2>
-                <p>
-                  {approved
-                    ? "The trial checklist is approved. Record-request and match-review inbox actions are not connected yet."
-                    : "Your trial checklist is ready for review. Record-request and match-review inbox actions are not connected yet."}
-                </p>
-                <a className="btn btn--primary" href="/criteria">
-                  Review trial checklist
-                </a>
-              </section>
-            )}
-            {page === "Outreach" && (
-              <section className="card integration-empty">
-                <h2>Outreach is not connected yet</h2>
-                <p>
-                  Doctor notes, contact approval and messaging are still
-                  prototype features. This workspace does not send messages.
-                </p>
-                <button className="btn" onClick={() => go("Worklist")}>
-                  Open patient worklist
-                </button>
-              </section>
+            {(page === "Inbox" || page === "Outreach") && (
+              <JourneyQueue view={view} kind={page} onOpen={openCase} />
             )}
           </>
         )}
@@ -623,7 +547,12 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
       <SiteMenu
         open={navOpen}
         toggleRef={toggleRef}
-        items={[...NAV, "Archive" as Page].map((item) => ({
+        items={[
+          ...NAV,
+          "Worklist" as Page,
+          "Activity" as Page,
+          "Archive" as Page,
+        ].map((item) => ({
           id: item,
           label: item,
           current: item === page,
@@ -658,9 +587,28 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
             : "Live AI is active. Model proposals are checked by deterministic evidence guards."}
         </p>
         <p>
-          Full clinical validation, record-request approvals and outreach remain
-          unfinished. Nothing is sent to a patient or clinician.
+          Investigations, record requests, replies and outreach are saved in
+          this workspace. Every send is simulated and requires approval.
+          Clinical validation remains pending.
         </p>
+        <p>
+          For a no-cost rehearsal, prepare the authored checklist, approve it,
+          then open patient 03. Existing patient evidence and previous runs are
+          retained.
+        </p>
+        <button
+          className="btn"
+          disabled={busy || !view.demoMode || view.pending > 0}
+          onClick={async () => {
+            await act(
+              { action: "prepare_walkthrough" },
+              "Fixture checklist prepared. Review and approve it to screen the cohort without AI calls.",
+            );
+            setDemoOpen(false);
+          }}
+        >
+          Prepare fixture walkthrough
+        </button>
         <button className="btn btn--primary" onClick={() => setDemoOpen(false)}>
           Close
         </button>
@@ -698,7 +646,11 @@ function Candidate({
           </span>
           <span className="cand-checks">
             {p.screening && !p.screening.stale
-              ? `${p.screening.result.rules.filter((r) => r.status === "met").length} supported · ${p.screening.result.rules.filter((r) => r.status === "unknown").length} unresolved`
+              ? status === "likely_match"
+                ? "Review for outreach"
+                : status === "ruled_out"
+                  ? "Review exclusion"
+                  : "Open next action"
               : p.screening?.stale
                 ? "Awaiting current-version screening"
                 : "Review checklist to begin"}

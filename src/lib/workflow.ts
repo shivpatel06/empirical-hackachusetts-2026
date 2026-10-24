@@ -70,6 +70,7 @@ export interface PatientView extends Patient {
   job: { id: number; state: string; error: string | null } | null;
 }
 export interface WorkflowView {
+  journey?: import("./journey").JourneyView;
   mode: "live" | "fixture";
   demoMode: boolean;
   assessmentAt: string;

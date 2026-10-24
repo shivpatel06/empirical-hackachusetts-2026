@@ -8,6 +8,7 @@ import {
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { validateDraft } from "../../lib/schemas/ai";
+import { checkScreening } from "../workflow/guardrails";
 import { safeAiError } from "./contracts";
 import { FixtureAdapter } from "./fixture-adapter";
 import {
@@ -165,6 +166,58 @@ describe("actual SDK runner with deterministic test models", () => {
     expect(trail.completion).toBe("failed");
     expect(trail.summary).toContain("401");
     expect(JSON.stringify(trail)).not.toContain("secret-request-body");
+  });
+
+  it("runs the outreach SDK tool before structured drafting and rejects foreign citations", async () => {
+    const result = checkScreening(
+      patient,
+      checklist,
+      cohort[0]!.proposals,
+      new Date(DEMO_TIME),
+      "fixture",
+    );
+    const supported = result.rules
+      .filter((r) => r.status === "met" && !r.review && r.provenanceVerified)
+      .flatMap((r) => r.citations);
+    for (const foreign of [false, true]) {
+      const observed: string[] = [];
+      const { adapter, calls } = mockAdapter((request, call) => {
+        if (call === 1)
+          return {
+            usage: new Usage(),
+            output: [
+              {
+                type: "function_call",
+                callId: "read-case",
+                name: "read_verified_case",
+                arguments: "{}",
+              },
+            ],
+          };
+        expect(JSON.stringify(request.input)).toContain("coordinatorReview");
+        return message({
+          physician: "Please review this trial with the patient.",
+          summary:
+            "Participation is voluntary and formal screening is pending.",
+          citedLineIds: [foreign ? "another-patient" : supported[0]!.lineId],
+        });
+      });
+      const run = adapter.draftOutreach(
+        {
+          patient,
+          trialId: demoTrial.id,
+          trialTitle: demoTrial.title,
+          result,
+          reviewNote: "Reviewed the evidence and remaining visit checks.",
+          language: "English",
+        },
+        { step: (a) => observed.push(a.tool) },
+      );
+      if (foreign) await expect(run).rejects.toThrow();
+      else expect((await run).physician).toContain("review");
+      expect(observed).toEqual(["read_verified_case"]);
+      expect(calls()).toBe(2);
+    }
   });
 
   it("uses one structured, tool-free model call per extraction/screening", async () => {
