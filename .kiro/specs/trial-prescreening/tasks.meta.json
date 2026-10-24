@@ -1,0 +1,189 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "0.1 Review the spec and reconcile ambiguities in Kiro": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873388805
+      },
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873395715
+      },
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873598071
+      }
+    ],
+    "0.2 Scaffold the single Next.js/TypeScript application": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873388869
+      },
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873601313
+      },
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792874705401
+      }
+    ],
+    "0.3 Add the OpenAI adapter, Agents SDK gap runner, and fixture adapter": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873388937
+      },
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792874708949
+      }
+    ],
+    "0.4 Capture one real trial snapshot and author the six-case fixtures": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873388998
+      },
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792874709840
+      }
+    ],
+    "1.1 Implement persisted domain schemas, event queue, and audit log": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389060
+      }
+    ],
+    "1.2 Implement trial retrieval, criteria extraction, and approval": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389114
+      }
+    ],
+    "1.3 Implement pre-filter, screening schema, and citation checks": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389165
+      }
+    ],
+    "1.4 Implement deterministic guardrails and property tests": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389214
+      }
+    ],
+    "1.5 Connect screening events to worklist/archive and evidence UI": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389303
+      }
+    ],
+    "2.1 Implement scoped gap tools and bounded model-selected execution": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389341
+      }
+    ],
+    "2.2 Add inbox actions and server-enforced approvals": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389383
+      }
+    ],
+    "2.3 Implement synthetic reply ingestion and automatic re-screening": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389435
+      }
+    ],
+    "2.4 Complete the end-to-end agentic workflow": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389560
+      }
+    ],
+    "3.1 Add outreach draft generation, languages, and review": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389619
+      }
+    ],
+    "3.2 Add outreach stage tracking with human-entered outcomes": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389664
+      }
+    ],
+    "3.3 Add criteria-change detection, diff, and cohort invalidation": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389716
+      }
+    ],
+    "3.4 Wire scheduled and triggered checks through shared handlers": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389766
+      }
+    ],
+    "3.5 Finish Inbox, Worklist, Trials, Archive, and Activity navigation": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389816
+      }
+    ],
+    "4.1 Run the full property, unit, and integration suite": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389866
+      }
+    ],
+    "4.2 Rehearse all three demo moments from reset": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389919
+      }
+    ],
+    "4.3 Update the product README with verified details": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873389970
+      }
+    ],
+    "4.4 Choose and verify deployment or record the limitation": [
+      {
+        "executionId": "f1c30b81-a776-4059-9c71-1d93fd97d627",
+        "chatSessionId": "sess_9ed71468-7ab7-4b5c-9dc5-030de0919f58",
+        "timestamp": 1792873390029
+      }
+    ]
+  }
+}

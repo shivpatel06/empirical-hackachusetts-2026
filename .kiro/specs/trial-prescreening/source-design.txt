@@ -1,0 +1,471 @@
+Trial Prescreening Agent: System Design
+Hackachusetts 2026, Healthcare & Biotech track. All patient data in this project is synthetic.
+
+1. Overview
+What it is. An AI agent system that finds cancer clinical trial patients for hospital research staff. It reads patient charts against each trial's eligibility rules, removes patients who don't qualify, investigates missing information on its own, and sends likely matches to the coordinator's inbox with the evidence attached.
+Who uses it. Research coordinators at small community cancer programs, who currently screen every patient by hand.
+The problem it solves. Cancer drug trials are slowed because hospital staff manually read patient charts to find eligible patients, and since most charts are dead ends, eligible patients get missed. Therefore, new treatments reach patients later.
+Core principles
+    1    AI reads and drafts; code decides. The AI only marks individual rules. Plain code sets every patient's status.
+    2    Every decision has evidence. Each result points to a specific line in the patient's chart, and code checks that the evidence is really there.
+    3    Nothing leaves the system without a person approving it.
+    4    Everything is logged.
+
+2. When it starts and how autonomous it is
+One-time setup (a person clicks)
+The system does not pull every trial from the government website. A hospital can only enroll patients in trials it has officially opened, so the coordinator tells the system which trials those are.
+    1    The coordinator clicks Add trial and enters the trial's ClinicalTrials.gov ID (for example, NCT0XXXXXXX).
+    2    The system automatically fetches the trial from the ClinicalTrials.gov API and builds a checklist (section 4.1).
+    3    The coordinator reviews and approves the checklist once. This catches any mistake in how the AI read the criteria before it affects hundreds of patients.
+From then on, the system runs on its own.
+What runs automatically
+Trigger
+When
+What happens
+Trial check
+Every night
+Checks each open trial's "last updated" date on ClinicalTrials.gov. If the criteria changed, it rebuilds the checklist and asks the coordinator to approve the new version.
+Clinic schedule
+Every night
+Screens every patient on the next day's clinic schedule against every open trial for their cancer type.
+New chart information
+As soon as it arrives
+A new lab, scan, pathology report, or note triggers a re-check of that patient.
+A reply arrives
+As soon as it arrives
+Outside records or results requested by the gap filler are added to the chart and trigger a re-check.
+Stalled step
+Daily
+The follow-up agent sends reminders when outreach stalls.
+What needs a click
+Action
+Who
+Add a trial (enter its ID)
+Coordinator
+Approve a new or changed checklist
+Coordinator
+Approve records requests and questions from the gap filler
+Coordinator
+Verify or reject a likely match
+Coordinator
+Approve the doctor note and patient summary
+Coordinator
+Record outcomes (doctor agreed, patient interested, consented)
+Coordinator
+There's also a Re-screen now button for running a check on demand, like during the demo.
+In one line: setup and approvals are clicks; everything between them is automatic.
+
+3. Data sources
+3.1 Trials
+    •    Source: the ClinicalTrials.gov public API (version 2), looked up by trial ID.
+    •    What the system uses: the trial title, conditions, phase, recruiting status, the eligibility criteria text, and the last updated date.
+3.2 Patient charts
+In a real hospital, charts would come from the hospital's record system through a standard export or the FHIR health data format.
+In the demo, each synthetic patient has basic structured data (from Synthea's format) plus written doctor notes.
+How the chart is stored. Every chart is broken into numbered chart lines. Each line is one fact with its source and date:
+Line
+Date
+Source
+Text
+L0
+3 months ago
+Pathology report
+Squamous cell carcinoma of the lung, stage IVB.
+L1
+2 weeks ago
+Oncology note
+Prior treatment: none yet.
+L2
+2 weeks ago
+Oncology note
+ECOG 1, mild shortness of breath on stairs.
+L3
+7 weeks ago
+Lab result
+Creatinine 1.0 mg/dL.
+L4
+5 months ago
+Radiology report
+Brain MRI: no metastases.
+This structure is what makes the system trustworthy:
+    •    Citations point to real lines, so code can check them.
+    •    Every line has a date, so code can check time windows ("within 28 days") itself.
+    •    New information is added as new lines, never overwriting old ones.
+
+4. Step by step
+4.1 Trial watcher: turning criteria into a checklist
+Triggered by: a trial being added, or a nightly check finding changed criteria.
+Input: the trial's eligibility criteria as written, for example:
+Exclusion criteria: Prior treatment with any PD-1, PD-L1, or CTLA-4 inhibitor.
+What the AI does: splits the criteria into individual rules and fills in a structured checklist. Exclusions are rewritten as "No ..." so that "met" always means the patient qualifies.
+What each checklist rule contains
+Field
+Meaning
+Example
+Number
+Order in the checklist
+2
+Plain rule
+Short, plain language
+No prior immunotherapy
+Category
+Type of fact needed
+Prior treatment
+What counts as evidence
+What to look for in the chart
+Medication or treatment history listing PD-1, PD-L1, or CTLA-4 drugs
+Threshold
+A number to compare, if any
+None
+Time window
+How recent the evidence must be
+None
+Checkable from chart?
+Yes, or "verify at visit"
+Yes
+Source sentence
+The exact original criterion
+"Prior treatment with any PD-1, PD-L1, or CTLA-4 inhibitor."
+Categories used: diagnosis, stage, biomarker or mutation, prior treatment, performance status (ECOG), lab values, imaging, other conditions, and other.
+"Verify at visit" rules. Some rules can't be checked from a chart, like a same-day pregnancy test or the patient's ability to give consent. These are marked "verify at visit." They don't block a match; they're listed for formal screening.
+Example checklist (lung cancer immunotherapy trial)
+#
+Rule
+Category
+Window
+Threshold
+1
+Stage IV non-small cell lung cancer
+Diagnosis, stage
+None
+None
+2
+No prior immunotherapy
+Prior treatment
+None
+None
+3
+Able to do daily activities
+Performance status
+None
+ECOG 0–1
+4
+Liver and kidney tests in range
+Labs
+14 days
+Creatinine ≤ 1.5 mg/dL; bilirubin ≤ 1.5× upper limit
+5
+No active brain spread
+Imaging
+28 days
+None
+Output: a new checklist version, saved as a draft for the coordinator to approve. Once approved, every patient with that cancer type is queued for screening. If an earlier version existed, all its screenings are marked out of date.
+4.2 Screener: checking the chart against the checklist
+Triggered by: an approved checklist, the nightly clinic schedule, new chart lines, or Re-screen now.
+Step 1: Pre-filter (code). Only pairs patients with trials for their cancer type, the way a basic records search would. A breast cancer patient is never screened for a lung trial.
+Step 2: Read the chart (AI). The AI receives the checklist and the patient's numbered chart lines with dates. For each rule, it returns:
+Field
+Example
+Rule number
+4
+Result
+met, not_met, or unknown
+Line cited
+L3
+Exact quote from that line
+"Creatinine 1.0 mg/dL"
+Short reason
+"Lab is 7 weeks old; the rule needs 14 days."
+It's instructed to choose unknown whenever information is missing, unclear, or too old, and never to guess. Chart text is treated strictly as data, never as instructions.
+Step 3: the results go to the guardrails.
+4.3 Guardrails: what the code checks
+The guardrails are plain code. They run after every screening and look for these things, in order:
+    1    Completeness. Every rule has a result. Any rule the AI skipped becomes unknown.
+    2    Valid answers. Results must be met, not_met, or unknown. Anything else becomes unknown.
+    3    Citation exists. The cited line must exist in this patient's chart.
+    4    Quote matches. The quote must actually appear in the cited line (ignoring punctuation and capitalization). If not, the citation is flagged not verified.
+    5    No evidence, no "met." A met with no valid, verified citation is downgraded to unknown.
+    6    Time windows, checked by code. For rules with a window, code compares the cited line's date to today. If the evidence is too old, met is downgraded to unknown, even if the AI said otherwise.
+    7    Thresholds, where possible. For numeric rules like creatinine ≤ 1.5, code reads the number from the cited line and checks it. If code and AI disagree, the rule becomes unknown.
+    8    Safe removals. A not_met only rules a patient out if its citation is verified. An unverified not_met sends the patient to the coordinator as needs review instead, so a patient is never silently removed because of a bad citation.
+Then the code sets the status:
+Situation
+Status
+Where the patient goes
+Any not_met with a verified citation
+Ruled out
+Removed from the active list
+Any not_met with an unverified citation
+Needs review
+Coordinator inbox
+Any unknown (and no failures)
+Needs info
+Gap filler
+Every rule met and verified
+Likely match
+Coordinator inbox
+4.4 Ruled out
+    •    The patient is removed from the active worklist for that trial.
+    •    They're kept in a Ruled out archive with the failed rule and its cited line, so the decision can be audited.
+    •    No coordinator time is spent.
+    •    They're re-checked automatically only if the trial's checklist changes, or if new chart information arrives that relates to the failed rule's category (for example, a new pathology report).
+4.5 Gap filler: investigating missing information (plans its own steps)
+Triggered by: a patient marked needs info.
+Goal it receives: "Resolve the unknown rules for this patient, or say exactly what a person needs to get."
+Tools it can choose from
+Tool
+What it does
+search_chart(query)
+Searches all of the patient's chart lines, including older ones
+get_latest(test_type)
+Returns the most recent result of a test and its date
+check_outside_records(type)
+Checks the outside-records inbox
+draft_records_request(item, reason)
+Drafts a request for a test, scan, or records (needs approval)
+ask_coordinator(question)
+Adds a question to the coordinator's inbox
+finish(summary)
+Stops and reports what it found
+How it runs: the AI picks one tool, sees the result, and decides the next step, up to 6 steps. Every step is written to the activity log.
+What it cannot do: change a patient's status, edit the chart, or send anything. If it finds the missing fact in the chart, it reports the line, and the screener re-runs; the guardrails still decide.
+Example (Patient 0187)
+    1    get_latest("liver panel") → 7 weeks ago, outside the 14-day window
+    2    check_outside_records("labs") → nothing new
+    3    draft_records_request("liver and kidney panel", "needed within 14 days for trial eligibility")
+    4    get_latest("brain MRI") → 5 months ago, outside the 28-day window
+    5    draft_records_request("brain MRI", "needed within 28 days for trial eligibility")
+    6    finish("Two items needed. Both requests drafted for approval.")
+4.6 Coordinator inbox
+Everything that needs a person goes to one inbox, sorted by urgency (patients with visits soonest first).
+Card type
+What it shows
+Actions
+Likely match
+Patient, trial, every rule with its highlighted chart line, next visit date, "verify at visit" items
+Verify, Reject (with a reason), Snooze
+Needs review
+The unverified failed rule and its cited line
+Confirm ruled out, Keep screening
+Request to approve
+A records or test request drafted by the gap filler
+Approve, Edit, Decline
+Question
+A question from the gap filler
+Answer (adds a chart line)
+Checklist to approve
+A new or changed checklist, with the changes highlighted
+Approve, Edit rule
+Draft to approve
+Doctor note or patient summary
+Approve and send, Edit
+Rejections and their reasons are logged, so the team can see where the AI tends to be wrong.
+4.7 Outreach: messages to the doctor and the patient
+Triggered by: the coordinator clicking Verify on a likely match.
+1. Note to the patient's doctor
+    •    Who the patient is, which trial they may qualify for, and two or three key rules they meet, with evidence
+    •    Their next visit date
+    •    A clear ask: "Would you like to discuss this trial with them at their visit?"
+    •    Delivered through the hospital's internal messaging in a real deployment; simulated in the demo
+2. Plain-language summary for the patient
+    •    What the study is, what taking part involves, that joining is voluntary and they can leave any time, and that their care team will answer questions
+    •    Written at about a 6th-grade reading level, in English, Spanish, Portuguese, or Haitian Creole
+    •    Given to the patient by their doctor or the coordinator, not sent directly by the system, because patients should hear about trials from their care team first
+Both are drafts until the coordinator approves them.
+4.8 After outreach: tracking to enrollment
+Outreach isn't the end. The system tracks each patient until they enroll or leave the process.
+Stages
+    1    Doctor notified: the approved note is sent.
+    2    Doctor responded: the doctor agrees to raise the trial, or declines (with a reason).
+    3    Discussed at visit: the doctor or coordinator talks with the patient and shares the summary.
+    4    Patient interested: or declined.
+    5    Consent visit scheduled.
+    6    Consented.
+    7    Formal screening: official tests confirm eligibility, often within a window of a few weeks before the first treatment. The "verify at visit" items are checked here.
+    8    Enrolled, or screen failed (with the reason).
+Follow-up agent (automatic)
+    •    No doctor reply after 2 business days → reminder to the doctor
+    •    The day before the patient's visit → reminder to the coordinator, with the summary ready
+    •    Patient interested but no consent visit scheduled after 5 days → reminder to the coordinator
+    •    Trial closes or stops recruiting → every active patient for that trial is closed out with that reason
+End states: enrolled, declined by doctor, declined by patient, screen failed, or trial closed. Each is logged with a reason, so the program can see where patients drop off.
+
+5. How it all connects
+Coordinator adds trial (click)
+  → Trial watcher builds checklist → Coordinator approves (click)
+  → Screener checks charts ← (nightly schedule, new chart lines, replies)
+  → Guardrails set status
+       ├─ Ruled out → removed from list (archived with reason)
+       ├─ Needs review → Coordinator inbox
+       ├─ Needs info → Gap filler → requests → Coordinator approves (click)
+       │                     → results arrive → new chart lines → back to Screener
+       └─ Likely match → Coordinator inbox → Verify (click)
+            → Outreach drafts → Coordinator approves (click)
+            → Follow-up agent tracks → Enrolled / Declined / Screen failed
+Events that connect the pieces
+Event
+Created by
+Starts
+TRIAL_ADDED
+Coordinator
+Trial watcher
+TRIAL_CHANGED
+Nightly check or rule edit
+Trial watcher
+CHECKLIST_APPROVED
+Coordinator
+Screener (all matching patients)
+SCHEDULE_LOADED
+Nightly job
+Screener (tomorrow's patients)
+CHART_UPDATED
+New record or reply
+Screener (that patient)
+NEEDS_INFO
+Guardrails
+Gap filler
+REQUEST_APPROVED
+Coordinator
+Request sent (simulated in demo)
+REPLY_RECEIVED
+Inbox
+Chart writer → CHART_UPDATED
+MATCH_VERIFIED
+Coordinator
+Outreach
+DRAFT_APPROVED
+Coordinator
+Message sent, tracker advances
+STEP_STALLED
+Daily check
+Follow-up agent
+
+6. A day in the life
+Time
+What happens
+2:00 am
+Trial watcher checks all open trials for updates. One trial changed a rule, so a new checklist draft goes to the inbox.
+3:00 am
+Screener checks tomorrow's 20 clinic patients against all open trials. Guardrails rule out 14, send 3 to gap filler, and put 3 likely matches in the inbox.
+3:15 am
+Gap filler investigates the 3 "needs info" patients and drafts 4 requests.
+6:00 am
+Follow-up agent reminds a doctor who hasn't replied to a note.
+8:30 am
+Maria opens her inbox: approves the changed checklist, verifies 3 matches, approves 4 requests and 3 doctor notes. About 10 minutes.
+11:00 am
+A requested lab result arrives. The patient is re-checked automatically and moves to likely match.
+2:00 pm
+A doctor replies "yes, I'll raise it." The tracker updates.
+
+7. Full example: Patient 0187
+    1    Setup: Maria adds the lung immunotherapy trial by ID and approves its 5-rule checklist.
+    2    Nightly screening: the screener marks rules 1–3 met (citing L0, L1, L2), and rules 4 and 5 unknown (labs 7 weeks old, MRI 5 months old).
+    3    Guardrails: all citations verified. The code also confirms both pieces of evidence are outside their time windows. Status: needs info.
+    4    Gap filler: checks recent results and outside records, finds nothing current, and drafts two requests.
+    5    Maria approves both requests the next morning.
+    6    Lab result arrives ("liver and kidney panel: normal") → new line L5 → automatic re-check → rule 4 met. Still needs info.
+    7    MRI result arrives ("no metastases") → new line L6 → automatic re-check → all 5 rules met. Status: likely match → coordinator inbox.
+    8    Maria verifies → outreach drafts a note to Dr. Patel and a Spanish summary → Maria approves.
+    9    Follow-up: Dr. Patel agrees, discusses the trial at the visit, and the patient is interested. A consent visit is scheduled, and formal screening confirms eligibility. Enrolled.
+
+8. Architecture
+Components
+    •    Frontend (React): Inbox, Worklist, Trials, Ruled out archive, Activity
+    •    Backend (Node.js): REST API, event queue, router, agents, guardrails
+    •    AI: a Claude model through Amazon Bedrock
+    •    External data: ClinicalTrials.gov API v2
+    •    Database: SQLite, seeded with synthetic Synthea patients and written notes
+Database tables
+Table
+Purpose
+trials
+Trial ID, title, cancer type, recruiting status, current checklist version
+checklist_rules
+Rule fields from section 4.1, per version, with approval status
+patients
+Synthetic patient, cancer type, doctor, next visit
+chart_lines
+Numbered, dated, sourced chart facts
+screenings
+Patient, trial, checklist version, status
+rule_results
+Per-rule result, cited line, quote, verified flag, downgrade reason
+inbox_items
+Cards waiting for the coordinator
+drafts
+Requests, doctor notes, patient summaries, and their approval status
+outreach
+Tracker stage and end state per patient and trial
+events
+Every event, its status, and any error
+audit_log
+Every agent step and human action
+Main API endpoints
+Endpoint
+Does
+POST /trials
+Add a trial by ID → TRIAL_ADDED
+POST /checklists/:id/approve
+→ CHECKLIST_APPROVED
+POST /screen
+Re-screen now
+GET /inbox
+Coordinator inbox
+POST /inbox/:id/action
+Verify, reject, approve, answer
+GET /worklist
+Active patient-trial pairs
+GET /screenings/:patient/:trial
+Rule results with highlighted chart lines
+POST /outreach/:id/stage
+Record doctor or patient responses
+POST /demo/reply
+Demo only: simulate an arriving result
+GET /activity
+Audit log
+GET /stream
+Live updates to the screen
+
+9. Safety and privacy
+    •    Synthetic data only in the demo, clearly labeled on every screen.
+    •    The AI never sets a status, edits a chart, or sends a message.
+    •    No silent removals: a patient is only ruled out on verified evidence.
+    •    Time windows and number thresholds are checked by code, not trusted to the AI.
+    •    Patients are never contacted directly by the system.
+    •    Everything is logged for review.
+    •    It's a prescreening aid. The care team confirms eligibility at formal screening.
+
+10. Testing
+Property-based tests (generated random cases)
+    •    If any rule is not_met with a verified citation, the status is never likely match.
+    •    A citation whose quote isn't in its line is never marked verified.
+    •    Evidence older than a rule's time window never produces met.
+    •    Every checklist rule always has exactly one result after the guardrails run.
+Unit and flow tests
+    •    A changed checklist marks old screenings out of date and re-queues patients.
+    •    A reply creates a chart line and a re-check.
+    •    Drafts can't be sent without an approval action.
+
+11. Demo scope
+Built today
+    •    Add trial by ID, AI checklist, coordinator approval
+    •    Screening with cited evidence and all guardrails
+    •    Ruled out archive, coordinator inbox, and verify flow
+    •    Gap filler with its own tool choices, shown in the activity log
+    •    Doctor note and multilingual patient summary drafts
+    •    Outreach tracker with simulated replies
+The three demo moments
+    1    The gap filler investigates and drafts requests on its own.
+    2    A result arrives and the patient turns into a likely match without a click.
+    3    A trial rule changes and every patient is re-screened.
+Future work
+    •    Real hospital record integration
+    •    Real messaging to doctors
+    •    Logins and multiple coordinators
+    •    Reports on where patients drop off, and on AI accuracy from coordinator rejections
+
+12. Impact
+    •    Today, staff spend about 7.5 hours of screening per enrolled patient, and two out of three charts reviewed are dead ends.
+    •    Similar AI tools have cut chart review time by 50–75%. Applied nationally, that's an estimated 550,000–825,000 staff hours a year.
+    •    Catching patients when they first qualify, instead of weeks or months later, gives more patients a chance at new treatments.
