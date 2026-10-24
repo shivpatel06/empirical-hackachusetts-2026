@@ -12,3 +12,9 @@ build/
 .next/
 coverage/
 *.log
+data/
+*.db
+*.db-shm
+*.db-wal
+next-env.d.ts
+*.tsbuildinfo
