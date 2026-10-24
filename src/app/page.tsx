@@ -1,23 +1,20 @@
-import { getServerEnv } from "@/server/env";
-
-// Read the environment at request time, not at build time.
+import { Workspace } from "./workspace";
+import { workflow } from "../server/workflow/runtime";
 export const dynamic = "force-dynamic";
-
-export default function HomePage() {
-  const env = getServerEnv();
-  return (
-    <main style={{ padding: "24px 16px", maxWidth: 720 }}>
-      <h1 style={{ marginTop: 0 }}>Trial Prescreening Agent</h1>
-      <p>
-        Trial-first prescreening for oncology research coordinators. A likely match is a potential
-        prescreening candidate, not a confirmation of eligibility.
-      </p>
-      <dl>
-        <dt style={{ fontWeight: 600 }}>Mode</dt>
-        <dd>{env.DEMO_MODE ? "Demo mode (synthetic records, simulated sends only)" : "Demo mode off"}</dd>
-        <dt style={{ fontWeight: 600 }}>AI adapter</dt>
-        <dd>Not connected yet</dd>
-      </dl>
-    </main>
-  );
+export default function Home() {
+  try {
+    return <Workspace initial={workflow().view()} />;
+  } catch {
+    return (
+      <main className="setup">
+        <span className="eyebrow">TRIAL PRESCREENING</span>
+        <h1>Prepare your workspace</h1>
+        <p>
+          The demo database is not ready. Run <code>npm run setup</code> on the
+          server, then refresh this page.
+        </p>
+        <a href="/">Refresh workspace →</a>
+      </main>
+    );
+  }
 }

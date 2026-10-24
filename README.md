@@ -4,19 +4,35 @@ Built for Hackachusetts powered by Kiro, October 24, 2026.
 
 ## Overview
 
-Project description coming soon.
+Trial Prescreening Agent helps oncology research coordinators start with a trial, review screening criteria, and investigate missing evidence in a synthetic patient cohort. The local demo now supports checklist approval, persisted cohort screening, a patient worklist, evidence inspection, an exclusion archive, and an activity history.
 
 ## Features
 
-To be documented as the project is built.
+- Next.js app with SQLite setup, environment validation and health endpoint.
+- Server-side OpenAI structured extraction/screening adapters and a patient-scoped gap runner with a code-enforced six-tool budget.
+- Explicit deterministic fixture mode, one public trial snapshot and six synthetic cases.
+- ClinicalTrials.gov import by NCT ID, explicit extraction mode, immutable registry snapshots and trial selection.
+- Versioned checklist editing and approval, deduplicated screening jobs, immutable chart lines and an append-only audit log.
+- Citation, observation-date, numeric-unit, conflict and stale-version checks with inspectable patient findings.
+- Responsive coordinator UI with Trials, Worklist, Archive and Activity views.
+
+The repeatable demo uses the seeded NCT06116682 snapshot. Registry import creates an unapproved draft using live structured extraction; unchanged imports preserve the existing checklist. Reviewed atomic AND/OR extraction, generalized clinical evidence interpretation, and the gap/inbox/reply workflow remain unfinished. Model outputs are proposals, not final eligibility decisions.
 
 ## Demo
 
-Demo link and video coming soon.
+Public deployment and demo video are pending. Run locally, then:
+
+1. Open **Trials** and inspect the 42 source-preserving demo criteria.
+2. Confirm availability at the **synthetic demo program**, then choose **Approve & screen cohort**.
+3. Open **Worklist**: Patient 01 is a potential match; 03 has stale evidence; 04 lacks treatment history; 05 has a rejected foreign citation.
+4. Open **Archive** for Patient 02 (hemoglobin below threshold) and 06 (unrelated cancer type).
+5. Inspect **Activity**. Rechecking the same cohort does not duplicate jobs.
+
+A fresh database starts with an unapproved checklist. Setup is idempotent and does not reset approvals. To rehearse from a fresh state without deleting your history, set `DATABASE_PATH` to a new local file, run setup, and restart the server.
 
 ## Tech stack
 
-To be documented once implementation begins.
+Next.js, React, TypeScript, SQLite (`better-sqlite3`), Zod v4, OpenAI Agents SDK 0.21.0 Vitest and fast-check. The intended demo uses a persistent Node server.
 
 ## Getting started
 
@@ -43,7 +59,30 @@ curl http://localhost:3000/api/health
 
 Environment variables are documented in [`.env.example`](.env.example): `OPENAI_API_KEY`, `DATABASE_PATH` (default `./data/app.db`), `DEMO_MODE` (default `true`), `CLINIC_TIMEZONE` (default `America/New_York`).
 
+### AI setup and explicit demo mode
+
+`AI_MODE=fixture` is the default and is visibly labeled as a simulation. `AI_MODE=live` selects OpenAI; provider failures never silently switch modes. Choose extraction mode on the import form; each checklist retains its mode, which is shown throughout the workspace. Live screening is connected, but the verified browser screening walkthrough used fixture mode; it is not evidence of full-trial live AI accuracy.
+
+```sh
+npm run ai:probe   # real, billable structured-output probes + synthetic scoped-tool smoke
+npm run ai:smoke   # real extraction/screening of three public criterion paragraphs + a synthetic chart
+```
+
+The probe tries an ordered, documented model list, verifies access and pins the selected `SCREENING_MODEL` and `GAP_MODEL` in gitignored `data/model-config.json`. Delete that file or rerun the probe to select again after changing accounts. The server's `getAiAdapter()` probes lazily on first live use if no pin exists. Probe receipts stay in `data/`; only model IDs and safe diagnostics are printed. Neither command prints the API key. These commands use a POSIX shell; on other platforms, set Node's `--conditions=react-server` option when running the equivalent `tsx` script.
+
+The successful initial probe selected `gpt-6-astra` for extraction/screening and `gpt-6-luna` for gap investigation. Availability can differ by account. [OpenAI's agent configuration docs](https://developers.openai.com/api/docs/guides/agents/define-agents) describe the structured-output/tool mechanism; installed SDK types are also checked by TypeScript.
+
+See [fixture provenance and expected cases](fixtures/trial-prescreening/README.md). `npm run setup` seeds the trial snapshot, unapproved checklist and six synthetic patients. Fixture assessment time is fixed at October 24, 2026 so the six scenarios remain repeatable. Audit entries use actual execution time.
+
 Note: with npm 10.9.2, `npm install` without the lockfile crashes in npm's dependency resolver (`Cannot read properties of null (reading 'edgesOut')`). `npm ci` works. To re-resolve dependencies, use npm 11 (`npx npm@11 install`).
+
+### Evidence policy and runtime limits
+
+Numeric guards currently cover the three reviewed demo thresholds (ANC, hemoglobin, platelets). Other positive fixture findings require exact matches to a closed, hand-authored synthetic assertion catalog and unchanged rule definitions. Unrecognized assertions and rules require review. This is not a generalized clinical reasoning engine; live prose citations alone do not establish eligibility. Stale proposed failures require review, while stale proposed matches become missing information. Visit checks remain separately pending.
+
+Editing a checklist changes its revision; approving locks it and queues the cohort. Creating a new draft makes previous results stale. Fixture replay intentionally rejects changed rules; use live mode for edited inputs, which may still require manual interpretation. Reimporting an NCT ID detects screening-relevant changes and creates an unapproved version while retaining old snapshots and results. Background registry-change detection is not implemented. Registry import failure, unchanged/changed content, source-quote validation and version races are covered by tests; arbitrary full-trial live extraction accuracy remains unverified.
+
+Run one persistent Node process against the SQLite file. Jobs survive in the database; interrupted jobs are marked failed on restart and can be retried up to two attempts per input version. The UI polls the shared worker every two seconds; there is no distributed scheduler or SSE stream. Mutations require `DEMO_MODE=true` and a matching HTTP Origin/Host. Authentication, real patient ingestion and real communications are not implemented.
 
 ## Testing
 
@@ -54,4 +93,4 @@ npm test            # vitest run
 
 ## Built with Kiro
 
-Details of the Kiro features used and how they helped build the project will be added after development. Project Kiro files live in [`.kiro/`](.kiro/).
+Codex prepared the original spec from the selected design. Kiro refined the spec, verified registry field paths, added traceability and implemented the Next.js/SQLite/Zod scaffold (tasks 0.1–0.2). Codex then implemented the OpenAI/fixture adapters and synthetic fixture package (tasks 0.3–0.4), followed by the persisted screening slice, coordinator UI, registry import and guardrail/property tests. These later changes are Codex work, not Kiro implementation. Project artifacts live in [`.kiro/`](.kiro/). No clinical benefit or development-speed measurement is claimed.

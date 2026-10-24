@@ -2,7 +2,34 @@
 
 ## Overview
 
-This implementation plan was prepared by Codex from the user-selected design; when Kiro performs the implementation, that work must be attributed to Kiro. The strategy is phased and incremental: Phase 0 establishes runnable contracts, Phase 1 proves the screening engine before expanding the UI, Phase 2 delivers the first complete agentic workflow, Phase 3 completes the supplied demo scope, and Phase 4 verifies and prepares the handoff. requirements.md and design.md are authoritative; read both before implementing. All tasks are pending and each checkbox stays unchecked until the code and the task's stated completion gate actually pass.
+This implementation plan was prepared by Codex from the user-selected design; when Kiro performs the implementation, that work must be attributed to Kiro. The strategy is phased and incremental: Phase 0 establishes runnable contracts, Phase 1 proves the screening engine before expanding the UI, Phase 2 delivers the first complete agentic workflow, Phase 3 completes the supplied demo scope, and Phase 4 verifies and prepares the handoff. requirements.md and design.md are authoritative; read both before implementing. Tasks 0.1–0.2 were completed by Kiro; tasks 0.3–0.4 were implemented and checked by Codex. Phase 1 now has a verified seeded-trial screening slice; remaining gates are stated below. Phase 2 onward remains pending. A checkbox is completed only after its stated gate passes.
+
+## Phase 0 verification (October 24, 2026)
+
+- Kiro: spec review/traceability and scaffold; commits `feee48a` and `6c82278`.
+- Codex: Agents SDK 0.21.0 adapter, exact fixture replay, live model probes, bounded scoped tools, public NCT06116682 snapshot and six hand-authored synthetic cases.
+- `npm test`: 29 tests passed; `npm run typecheck` and `npm run build` passed.
+- `npm run ai:probe`: structured probes passed for `gpt-6-astra` and `gpt-6-luna`; live scoped chart read succeeded. SDK mock-model test rejected excess executions after six tool actions.
+- `npm run ai:smoke`: three published criterion paragraphs extracted and screened against one synthetic patient; result coverage and exact citation checks passed. This is not full-trial accuracy or clinical validation.
+- Fixture checklist preserves all 42 source paragraphs as draft conditions. Atomic decomposition, full AND/OR review, database persistence and coordinator approval remain tasks 1.1–1.2. Expected cohort statuses are annotations for future guardrail tests, not computed decisions.
+
+## Seeded workflow verification (October 24, 2026, Codex)
+
+- Implemented domain persistence, version/revision-bound checklist approval, deduplicated event processing, stale-job rejection, evidence results and append-only audit/chart storage.
+- Implemented Trials, Worklist, Archive and Activity with editing, approvals, patient evidence, pending visit checks, stale/error/empty states and responsive layouts.
+- Computed all six fixture outcomes independently of expected-status annotations: one potential match, two missing-info cases, one review case and two exclusions. Browser walkthrough verified approval, stale evidence, foreign-citation rejection, archive, activity and no-op duplicate screening.
+- Added nine fast-check properties (100 cases each) plus unit/integration tests. Current suite: 52 tests. Typecheck and production build pass. Live full-trial screening has not been validated in this slice.
+- Task 1.2 is partial: seeded snapshot review/edit/approval and immutable versions work. Registry import/error handling now works (see checkpoint below); reviewed atomic AND/OR extraction remains incomplete.
+- Task 1.4 is partial: the three demo numeric thresholds, citation/date/conflict checks and exact synthetic assertions are guarded. Generalized clinical semantics, compound-rule evidence policies, and broader reference-range support remain incomplete. Unrecognized cases fail to review; no clinical validation is claimed.
+- Task 1.5 gate is verified for the current seeded, approved checklist. This does not imply completion of the outstanding 1.2/1.4 gates.
+- The API is a typed `/api/workflow` action endpoint and uses two-second polling. Separate REST resources, SSE and a distributed worker are not implemented.
+
+## Registry import checkpoint (October 24, 2026, Codex)
+
+- Added NCT ID validation, ClinicalTrials.gov v2 retrieval, safe registry/extraction errors, snapshot history, per-trial versions and trial selection.
+- Imports remain unapproved. Unchanged screening content skips extraction and preserves the checklist; changed content creates a draft and makes old results stale. Extraction races cannot overwrite coordinator edits. Switching the selected trial does not invalidate another trial's queued job.
+- Current suite: 62 tests pass, typecheck and production build pass. Migration 0003 applied to the existing local database without resetting history. Browser reimport of NCT06116682 reached the real registry and preserved approved v2. New/changed import tests use a controlled adapter; they do not establish full-trial live extraction accuracy.
+- Tasks 1.2 and 1.4 remain partial: atomic compound-rule review and generalized evidence policies are still required. No new Kiro interaction occurred in this checkpoint.
 
 ## Task Dependency Graph
 
@@ -112,7 +139,7 @@ The same dependency order is expressed below as sequential execution waves. Each
   - Gate: fresh install, migration, seed, typecheck, and local start succeed; secrets are server-only; Zod v4 is installed and the shared schema module compiles; `.env.example` exists with no secret value.
   - _Requirements: R2, R7_
 
-- [ ] 0.3 Add the OpenAI adapter, Agents SDK gap runner, and fixture adapter
+- [x] 0.3 Add the OpenAI adapter, Agents SDK gap runner, and fixture adapter
   - Add a server-only OpenAI adapter and an OpenAI Agents SDK (`@openai/agents`) gap runner; verify a structured response and one scoped read-tool call with the configured model.
   - Verify the `@openai/agents` structured-output mechanism and the current OpenAI model ID and SDK version against current official documentation before writing integration code.
   - Implement a startup model probe that tries a prioritized list of models callable by the account's `OPENAI_API_KEY` and pins the first available into a single `MODEL_CONFIG` with `SCREENING_MODEL` (strongest reasoning, for `extract`/`screen`) and `GAP_MODEL` (faster/cheaper, for the gap loop); if only one model is available, use it for both and record that.
@@ -123,14 +150,14 @@ The same dependency order is expressed below as sequential execution waves. Each
   - Gate: real smoke-test result or precise access blocker recorded; no fallback misrepresented as live AI; verified SDK structured-output mechanism and model/version captured; the probe records the pinned `SCREENING_MODEL` and `GAP_MODEL` (or the exact access blocker), a real structured response and one scoped read-tool call succeed, and the code-enforced six-tool cap is demonstrated; no fixture run is presented as live.
   - _Requirements: R3, R4_
 
-- [ ] 0.4 Capture one real trial snapshot and author the six-case fixtures
+- [x] 0.4 Capture one real trial snapshot and author the six-case fixtures
   - Select and capture one real oncology trial snapshot.
   - Create the single shared synthetic cohort of six cases mapping one-to-one to the six requirement scenarios: supported match, valid exclusion, stale labs/imaging, missing treatment history, conflicting/invalid citation, and unrelated cancer type; this is the same cohort referenced by requirements and design.
   - Hand-annotate expected rules and outcomes before any model execution.
   - Gate: fixture source/provenance and expected evidence dates/units recorded; no real patient data; six fixtures map to the six scenarios.
   - _Requirements: R1, R2_
 
-- [ ] 1.1 Implement persisted domain schemas, event queue, and audit log
+- [x] 1.1 Implement persisted domain schemas, event queue, and audit log
   - Implement persisted domain schemas, the event queue, and the audit log with version IDs, unique keys, and an injectable clock.
   - Gate: migration/seed and duplicate-event tests pass.
   - _Requirements: R2, R7_
@@ -141,7 +168,7 @@ The same dependency order is expressed below as sequential execution waves. Each
   - Gate: malformed ID/network/error tests, zero-rule rejection, AND/OR preservation, and unapproved-screen prevention pass.
   - _Requirements: R1_
 
-- [ ] 1.3 Implement pre-filter, screening schema, and citation checks
+- [x] 1.3 Implement pre-filter, screening schema, and citation checks
   - Implement the code pre-filter, the model screening schema, citation checks, and result completion.
   - Gate: foreign line IDs, missing/duplicate rules, empty/altered quotes, negation, and chart prompt-injection fixtures cannot yield unsupported matches.
   - _Requirements: R2, R3_
@@ -152,7 +179,7 @@ The same dependency order is expressed below as sequential execution waves. Each
   - _Requirements: R3_
   - _Properties: 1, 2, 3, 4, 5, 6, 7, 8_
 
-- [ ] 1.5 Connect screening events to worklist/archive and evidence UI
+- [x] 1.5 Connect screening events to worklist/archive and evidence UI
   - Connect screening events to the worklist/archive and a minimal evidence-detail UI.
   - Gate: a current approved checklist produces inspectable seeded outcomes and a stale model job cannot overwrite a newer result.
   - _Requirements: R3, R7_

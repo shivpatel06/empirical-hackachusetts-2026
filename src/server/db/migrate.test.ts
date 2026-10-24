@@ -22,14 +22,14 @@ describe("runMigrations", () => {
     expect(currentMigrationVersion(db)).toBe(0);
 
     const first = runMigrations(db);
-    expect(first.applied.map((m) => m.version)).toEqual([1]);
-    expect(first.version).toBe(1);
+    expect(first.applied.map((m) => m.version)).toEqual([1, 2, 3]);
+    expect(first.version).toBe(3);
     expect(db.prepare("SELECT name FROM sqlite_master WHERE name = 'app_meta'").get()).toBeTruthy();
 
     const second = runMigrations(db);
     expect(second.applied).toEqual([]);
-    expect(second.version).toBe(1);
-    expect(db.prepare("SELECT COUNT(*) AS n FROM schema_migrations").get()).toEqual({ n: 1 });
+    expect(second.version).toBe(3);
+    expect(db.prepare("SELECT COUNT(*) AS n FROM schema_migrations").get()).toEqual({ n: 3 });
   });
 
   it("applies only migrations newer than the current version, in order", () => {
