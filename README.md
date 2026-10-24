@@ -1,31 +1,31 @@
 # Hackachusetts 2026
 
-Team project for Hackachusetts powered by Kiro, October 24, 2026.
+Built for Hackachusetts powered by Kiro, October 24, 2026.
 
-## Team
+## Overview
 
-| Member | Role |
-| --- | --- |
-| Krishan | Demo and UI |
-| Shiv | Solution implementation |
-| Aryan | Submission and video |
+Project description coming soon.
 
-## Project
+## Features
 
-Project description and challenge track will be added once selected.
+To be documented as the project is built.
 
-## Setup
+## Demo
 
-Implementation has not started. Add dependencies, environment variables, run commands, and testing instructions as the project is built.
+Demo link and video coming soon.
 
-## Kiro
+## Tech stack
 
-Keep `.kiro/` committed at the repository root. Add the actual specs, steering documents, and hooks used during development. The initial placeholder is not evidence of Kiro usage.
+To be documented once implementation begins.
 
-## Submission
+## Getting started
 
-- Public demo video under three minutes: pending
-- Working demo or test build: pending
-- Kiro usage write-up: pending
+Dependencies, environment variables, and local run commands will be added with the implementation.
 
-Use the shared planning Page for roles and the submission checklist.
+## Testing
+
+Test commands and steps for trying the main workflow will be added with the implementation.
+
+## Built with Kiro
+
+Details of the Kiro features used and how they helped build the project will be added after development. Project Kiro files live in [`.kiro/`](.kiro/).
