@@ -13,6 +13,14 @@ export const dynamic = "force-dynamic";
 const action = z.discriminatedUnion("action", [
   z
     .object({
+      action: z.literal("reextract"),
+      trialId: z.string().regex(/^NCT\d{8}$/),
+      id: z.number().int().positive(),
+      revision: z.number().int().positive(),
+    })
+    .strict(),
+  z
+    .object({
       action: z.literal("import"),
       nctId: z.string().max(40),
       mode: z.enum(["fixture", "live"]),
@@ -73,7 +81,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = action.parse(await request.json()),
       store = workflow();
-    if (body.action === "import")
+    if (body.action === "reextract")
+      await importTrial(
+        store,
+        body.trialId,
+        "live",
+        () => getAiAdapter("live"),
+        fetch,
+        { id: body.id, revision: body.revision },
+      );
+    else if (body.action === "import")
       await importTrial(store, body.nctId, body.mode, () =>
         getAiAdapter(body.mode),
       );

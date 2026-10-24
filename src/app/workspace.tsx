@@ -470,6 +470,7 @@ export function Workspace({ initial }: { initial: WorkflowView }) {
                     {c.state === "draft" ? (
                       <button
                         className="text-button"
+                        disabled={busy}
                         onClick={() =>
                           setEdit(
                             edit ? null : { rules: structuredClone(c.rules) },
@@ -496,6 +497,33 @@ export function Workspace({ initial }: { initial: WorkflowView }) {
                       </button>
                     )}
                   </div>
+                  {!edit && (
+                    <div className="extraction-upgrade">
+                      <p>
+                        Re-extract the complete registry criteria with Live AI
+                        to review individual conditions and alternatives. This
+                        creates an unapproved draft and marks earlier results
+                        outdated.
+                      </p>
+                      <button
+                        className="text-button"
+                        disabled={busy}
+                        onClick={() =>
+                          act(
+                            {
+                              action: "reextract",
+                              trialId: trial.id,
+                              id: c.id,
+                              revision: c.revision,
+                            },
+                            "A new live-extracted draft is ready. Review all conditions and confirm local availability before approving.",
+                          )
+                        }
+                      >
+                        {busy ? "Working…" : "Re-extract criteria with Live AI"}
+                      </button>
+                    </div>
+                  )}
                   {edit && (
                     <div className="edit-note">
                       Edits create a new draft revision. Fixture replay supports

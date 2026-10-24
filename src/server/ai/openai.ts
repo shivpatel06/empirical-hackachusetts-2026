@@ -7,7 +7,6 @@ import {
   type ModelProvider,
 } from "@openai/agents";
 import {
-  extractionDraftSchema,
   checklistInputSchema,
   patientSchema,
   screeningOutputSchema,
@@ -19,7 +18,11 @@ import {
 } from "../../lib/schemas/ai";
 import { type AiAdapter, type UnresolvedRule, safeAiError } from "./contracts";
 import { GapSession, gapParameters, type GapToolName } from "./gap-tools";
-import { validateCriteriaSource } from "../../lib/criteria";
+import {
+  extractionTransportSchema,
+  expandExtraction,
+  sourceBlocks,
+} from "./extraction";
 
 export interface ModelConfig {
   SCREENING_MODEL: string;
@@ -58,37 +61,50 @@ export class OpenAiAdapter implements AiAdapter {
     const agent = new Agent({
       name: "Criteria extractor",
       model: this.models.SCREENING_MODEL,
+      modelSettings: {
+        timeoutMs: 180_000,
+        reasoning: { effort: "medium" },
+        text: { verbosity: "low" },
+      },
       instructions: `${evidenceInstructions}
 Extract all criteria into uniquely identified qualification rules. Preserve exclusions and exceptions.
-Keep exact sourceQuote text. Encode AND/OR logic in expression nodes with unique IDs and a root ID;
+Use sourceId to reference an exact numbered source block. Encode AND/OR logic in expression nodes with unique IDs and a root ID;
 condition nodes have condition text and no children; all/any nodes have children and null condition.
 Do not flatten an OR into independently required rules. Never drop unhandled criteria.
 Use chartCheckable=false only for criteria genuinely requiring a future visit/consent decision.
-Numeric/temporal are null unless a single unambiguous constraint applies to the whole rule.
+Numeric/temporal are null unless a single unambiguous constraint applies to the atomic condition.
 For conditional/compound thresholds preserve all details in expression nodes; do not invent a scalar.
-Every condition node must be atomic. Add assessment with semantics=qualification and exactly one
-condition policy per leaf: nodeId, exact sourceQuote, numeric (or null), temporal (or null).
+Every condition node must be atomic. Each node has numeric and temporal fields, both null on
+logic nodes. Condition nodes have numeric/temporal policies only where explicitly supported.
 All predicates express QUALIFICATION. For an exclusion such as excluded when value > 3,
 the qualification is value <= 3; preserve source polarity=exclusion as metadata. Do not invert twice.
-Keep whole-rule numeric and temporal null; place supported thresholds on condition policies.
+Place supported thresholds directly on atomic condition nodes.
 Use analyte names from the source and explicit units. Never encode prose or conditional exceptions
 as a single numeric threshold. Non-numeric policies stay null and require coordinator interpretation.
 Use temporal.anchor=assessment only when the source explicitly uses assessment time. Preserve
 other event anchors (registration, treatment, etc.); code will require their confirmation.
-Retain the complete source including notes and exceptions across rule sourceQuote fields.
+Represent EVERY numbered source block, including notes and exceptions. Return one or more rule
+groups per source block, with its sourceId. Do not repeat source paragraphs in qualification or
+condition text: the server attaches exact source text from sourceId. Keep descriptions concise
+while retaining all qualifying conditions, alternatives and exceptions. Do not merge source blocks.
 Return a draft only. Coordinator approval is required before screening.`,
-      outputType: extractionDraftSchema,
+      outputType: extractionTransportSchema,
     });
     try {
-      const result = await this.runner.run(agent, JSON.stringify(trial), {
-        maxTurns: 1,
-        signal: AbortSignal.timeout(60_000),
-      });
-      const draft = validateDraft(
-        extractionDraftSchema.parse(result.finalOutput),
+      const result = await this.runner.run(
+        agent,
+        JSON.stringify({
+          id: trial.id,
+          title: trial.title,
+          sourceUrl: trial.sourceUrl,
+          sourceBlocks: sourceBlocks(trial.criteriaText),
+        }),
+        {
+          maxTurns: 1,
+          signal: AbortSignal.timeout(180_000),
+        },
       );
-      validateCriteriaSource(trial.criteriaText, draft.rules);
-      return draft;
+      return expandExtraction(trial.criteriaText, result.finalOutput);
     } catch (error) {
       throw new Error(safeAiError(error));
     }

@@ -1,4 +1,69 @@
 import type { ChecklistDraft } from "./schemas/ai";
+type Rule = ChecklistDraft["rules"][number];
+
+export function splitCondition(
+  rule: Rule,
+  nodeId: string,
+  operator: "all" | "any",
+  suffix: string,
+): Rule {
+  const copy = structuredClone(rule),
+    node = copy.expression.nodes.find((n) => n.id === nodeId);
+  if (!node || node.operator !== "condition" || !copy.assessment)
+    throw new Error("Select an atomic condition to split");
+  const ids = [`${nodeId}-${suffix}-1`, `${nodeId}-${suffix}-2`];
+  if (ids.some((id) => copy.expression.nodes.some((n) => n.id === id)))
+    throw new Error("Condition ID already exists");
+  const policy = copy.assessment.conditions.find((p) => p.nodeId === nodeId)!;
+  copy.expression.nodes.push(...ids.map((id) => ({ ...node, id })));
+  node.operator = operator;
+  node.condition = null;
+  node.childIds = ids;
+  copy.assessment.conditions = copy.assessment.conditions
+    .filter((p) => p.nodeId !== nodeId)
+    .concat(ids.map((id) => ({ ...structuredClone(policy), nodeId: id })));
+  return copy;
+}
+
+export function removeConditionBranch(
+  rule: Rule,
+  parentId: string,
+  childId: string,
+): Rule {
+  const copy = structuredClone(rule),
+    nodes = new Map(copy.expression.nodes.map((n) => [n.id, n])),
+    parent = nodes.get(parentId);
+  if (
+    !parent ||
+    parent.operator === "condition" ||
+    !parent.childIds.includes(childId)
+  )
+    throw new Error("Branch not found");
+  const removed = new Set<string>();
+  const collect = (id: string) => {
+    removed.add(id);
+    nodes.get(id)!.childIds.forEach(collect);
+  };
+  collect(childId);
+  parent.childIds = parent.childIds.filter((id) => id !== childId);
+  if (parent.childIds.length === 1) {
+    const replacement = parent.childIds[0]!;
+    if (copy.expression.rootId === parentId)
+      copy.expression.rootId = replacement;
+    copy.expression.nodes.forEach((n) => {
+      n.childIds = n.childIds.map((id) => (id === parentId ? replacement : id));
+    });
+    removed.add(parentId);
+  }
+  copy.expression.nodes = copy.expression.nodes.filter(
+    (n) => !removed.has(n.id),
+  );
+  if (copy.assessment)
+    copy.assessment.conditions = copy.assessment.conditions.filter(
+      (p) => !removed.has(p.nodeId),
+    );
+  return copy;
+}
 
 const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
 /** Mechanical coverage, not a semantic/clinical correctness assertion. Every

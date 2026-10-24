@@ -106,6 +106,7 @@ export class WorkflowStore {
     draft: ChecklistDraft | null,
     mode: "fixture" | "live",
     expected: string,
+    reextract = false,
   ) {
     return this.db.transaction(() => {
       if (this.importRevision(trial.id) !== expected)
@@ -114,7 +115,7 @@ export class WorkflowStore {
         );
       const unchanged = this.registryUnchanged(trial),
         previous = this.latestChecklist(trial.id);
-      if (!unchanged && !draft)
+      if ((!unchanged || reextract) && !draft)
         throw new WorkflowError(
           "Extraction is required for changed criteria.",
           422,
@@ -150,7 +151,7 @@ export class WorkflowStore {
           JSON.stringify(trial.snapshot),
           trial.fetchedAt,
         );
-      if (!unchanged) {
+      if (!unchanged || reextract) {
         if (previous?.state === "draft")
           this.db
             .prepare(
@@ -176,7 +177,11 @@ export class WorkflowStore {
             snapshot.id,
           );
         this.audit(
-          previous ? "Registry change imported" : "Trial imported",
+          reextract && unchanged
+            ? "Criteria re-extracted"
+            : previous
+              ? "Registry change imported"
+              : "Trial imported",
           `${trial.id}: ${mode} extraction; new draft requires review and local availability confirmation.`,
         );
       } else
@@ -185,7 +190,7 @@ export class WorkflowStore {
           `${trial.id}: screening-relevant content unchanged; no new checklist or screening jobs.`,
         );
       this.selectTrial(trial.id);
-      return !unchanged;
+      return !unchanged || reextract;
     })();
   }
   private audit(

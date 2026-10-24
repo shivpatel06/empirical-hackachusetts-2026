@@ -1,7 +1,7 @@
 import type { AiAdapter } from "../ai/contracts";
 import type { WorkflowStore } from "../workflow/store";
 import { WorkflowError } from "../workflow/store";
-import { fetchTrial, type RegistryTrial } from "./registry";
+import { fetchTrial, validateNctId, type RegistryTrial } from "./registry";
 import { validateDraft } from "../../lib/schemas/ai";
 import { validateCriteriaSource } from "../../lib/criteria";
 
@@ -11,10 +11,23 @@ export async function importTrial(
   mode: "fixture" | "live",
   adapter: () => Promise<AiAdapter>,
   fetcher: typeof fetch = fetch,
+  reextract?: { id: number; revision: number },
 ) {
+  id = validateNctId(id);
+  if (reextract) {
+    const current = store.latestChecklist(id);
+    if (
+      !current ||
+      current.id !== reextract.id ||
+      current.revision !== reextract.revision
+    )
+      throw new WorkflowError(
+        "Checklist changed. Refresh before re-extracting criteria.",
+      );
+  }
+  const captured = store.importRevision(id);
   const trial = await fetchTrial(id, fetcher, store.clock);
-  const captured = store.importRevision(trial.id);
-  if (store.registryUnchanged(trial))
+  if (!reextract && store.registryUnchanged(trial))
     return store.persistImport(trial, null, mode, captured);
   let draft;
   try {
@@ -45,7 +58,7 @@ export async function importTrial(
       422,
     );
   }
-  return store.persistImport(trial, draft, mode, captured);
+  return store.persistImport(trial, draft, mode, captured, Boolean(reextract));
 }
 export function validateSourceQuotes(
   trial: Pick<RegistryTrial, "criteriaText">,

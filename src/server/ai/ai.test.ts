@@ -170,23 +170,25 @@ describe("actual SDK runner with deterministic test models", () => {
   it("uses one structured, tool-free model call per extraction/screening", async () => {
     const { adapter, calls } = mockAdapter((request, call) => {
       expect(request.tools).toEqual([]);
+      if (call === 1) {
+        expect(request.modelSettings.timeoutMs).toBe(180_000);
+        expect(request.modelSettings.reasoning?.effort).toBe("medium");
+      }
       const atomicMock = {
-        rules: demoChecklist.rules.map((rule) => ({
-          ...rule,
-          numeric: null,
-          temporal: null,
-          assessment: {
-            semantics: "qualification",
-            conditions: rule.expression.nodes
-              .filter((n) => n.operator === "condition")
-              .map((node) => ({
-                nodeId: node.id,
-                sourceQuote: rule.sourceQuote,
-                numeric: rule.numeric,
-                temporal: rule.temporal,
+        rules: demoChecklist.rules.map(
+          ({ sourceQuote, numeric, temporal, assessment, ...rule }, index) => ({
+            ...rule,
+            sourceId: `source-${index + 1}`,
+            expression: {
+              ...rule.expression,
+              nodes: rule.expression.nodes.map((node) => ({
+                ...node,
+                numeric: node.operator === "condition" ? numeric : null,
+                temporal: node.operator === "condition" ? temporal : null,
               })),
-          },
-        })),
+            },
+          }),
+        ),
       };
       return message(
         call === 1 ? atomicMock : { results: cohort[0]!.proposals },

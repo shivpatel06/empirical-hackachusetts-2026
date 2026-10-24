@@ -202,8 +202,12 @@ export function checkScreening(
       return {
         ...base,
         status: met ? "met" : "not_met",
+        review: met && proposal!.status === "not_met",
         support: "numeric",
-        reason: `Verified measurement ${met ? "meets" : "does not meet"} ${numeric.operator} ${numeric.value} ${numeric.unit}.`,
+        reason:
+          met && proposal!.status === "not_met"
+            ? "The model proposed a failure, but current measurements meet the threshold. Review this disagreement."
+            : `Verified measurement ${met ? "meets" : "does not meet"} ${numeric.operator} ${numeric.value} ${numeric.unit}.`,
       };
     }
     if (

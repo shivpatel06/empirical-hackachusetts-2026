@@ -142,6 +142,75 @@ describe("ClinicalTrials.gov adapter", () => {
 });
 
 describe("transactional import and trial switching", () => {
+  it("explicit re-extraction creates an unapproved version even when registry content is unchanged", async () => {
+    const store = setup();
+    store.approve(1, 1, true);
+    while (await store.processNext(new FixtureAdapter())) {}
+    const adapter = fakeLive();
+    const extract = vi.spyOn(adapter, "extract");
+    await importTrial(
+      store,
+      demoTrial.id,
+      "live",
+      async () => adapter,
+      response(),
+      { id: 1, revision: 1 },
+    );
+    expect(extract).toHaveBeenCalledOnce();
+    expect(store.checklist()).toMatchObject({
+      version: 2,
+      state: "draft",
+      mode: "live",
+    });
+    expect(store.checklist(1)?.state).toBe("approved");
+    expect(store.view().patients.every((p) => p.screening?.stale)).toBe(true);
+    expect(() => store.screen()).toThrow(/Approve/);
+    await expect(
+      importTrial(
+        store,
+        demoTrial.id,
+        "live",
+        async () => adapter,
+        response(),
+        { id: 1, revision: 1 },
+      ),
+    ).rejects.toThrow(/Checklist changed/);
+  });
+  it("re-extraction failure preserves an approved version and a fetch-time edit cannot be overwritten", async () => {
+    const store = setup();
+    store.approve(1, 1, true);
+    const adapter = fakeLive();
+    adapter.extract = async () => {
+      throw Error("fail");
+    };
+    await expect(
+      importTrial(
+        store,
+        demoTrial.id,
+        "live",
+        async () => adapter,
+        response(),
+        { id: 1, revision: 1 },
+      ),
+    ).rejects.toThrow(/extraction failed/);
+    expect(store.checklist()).toMatchObject({ id: 1, state: "approved" });
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => {
+      store.revise(1);
+      return new Response(JSON.stringify(snapshot));
+    });
+    await expect(
+      importTrial(
+        store,
+        demoTrial.id,
+        "live",
+        async () => fakeLive(),
+        fetcher,
+        { id: 1, revision: 1 },
+      ),
+    ).rejects.toThrow(/changed while extraction/);
+    expect(store.checklist()).toMatchObject({ version: 2, state: "draft" });
+  });
+
   it("imports an arbitrary NCT snapshot as an unapproved version without replacing the original trial", async () => {
     const store = setup();
     store.approve(1, 1, true);

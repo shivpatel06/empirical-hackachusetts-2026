@@ -100,7 +100,9 @@ export function checkAtomicRule(
         return uncertain(
           "The time window uses an unsupported event anchor. Confirm the event date and interpretation.",
         );
-      const lines = cited.filter((l) => l.measurement?.analyte.toLowerCase() === n.analyte.toLowerCase());
+      const lines = cited.filter(
+        (l) => l.measurement?.analyte.toLowerCase() === n.analyte.toLowerCase(),
+      );
       result.citations = base.citations.filter((c) =>
         lines.some((l) => l.id === c.lineId),
       );
@@ -197,13 +199,15 @@ export function checkAtomicRule(
     conditions,
     support: status === "unknown" ? "none" : "compound",
     review:
-      status === "unknown" &&
-      (base.proposedStatus === "not_met" || conditions.some((c) => c.review)),
+      (status !== "not_met" && base.proposedStatus === "not_met") ||
+      (status === "unknown" && conditions.some((c) => c.review)),
     reason:
-      status === "met"
-        ? "The approved AND/OR expression is supported by current cited measurements."
-        : status === "not_met"
-          ? "Current cited evidence fails the approved qualification expression."
-          : "The expression remains unresolved. Inspect the individual conditions.",
+      status === "met" && base.proposedStatus === "not_met"
+        ? "The model proposed a failure, but current measurements support the expression. Review this disagreement."
+        : status === "met"
+          ? "The approved AND/OR expression is supported by current cited measurements."
+          : status === "not_met"
+            ? "Current cited evidence fails the approved qualification expression."
+            : "The expression remains unresolved. Inspect the individual conditions.",
   };
 }

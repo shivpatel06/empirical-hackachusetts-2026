@@ -120,11 +120,12 @@ function input(operator: "all" | "any" = "all") {
 describe("atomic expression guardrails", () => {
   it("evaluates new-trial AND thresholds and ULN independently of model status", () => {
     const x = input();
-    x.checklist.rules[0]!.assessment!.conditions[0]!.numeric!.analyte = "Hemoglobin";
+    x.checklist.rules[0]!.assessment!.conditions[0]!.numeric!.analyte =
+      "Hemoglobin";
     expect(x.run().status).toBe("likely_match");
     const p = x.proposal();
     p.status = "not_met";
-    expect(x.run([p]).status).toBe("likely_match");
+    expect(x.run([p]).status).toBe("needs_review");
     x.patient.chart[1]!.measurement!.value = 1.51;
     expect(x.run().status).toBe("ruled_out");
     expect(x.run().rules[0]!.conditions?.map((c) => c.status)).toEqual([
@@ -302,7 +303,11 @@ describe("atomic properties (100 cases each)", () => {
           const p = x.proposal();
           p.status = proposed ? "met" : "not_met";
           expect(x.run([p]).status).toBe(
-            tenths >= 100 ? "likely_match" : "ruled_out",
+            tenths >= 100
+              ? proposed
+                ? "likely_match"
+                : "needs_review"
+              : "ruled_out",
           );
         },
       ),

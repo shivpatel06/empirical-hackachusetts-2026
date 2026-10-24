@@ -39,6 +39,24 @@ afterEach(() => {
 const runs = { numRuns: 100 };
 
 describe("independent guardrail outcomes", () => {
+  it("routes unsupported model failures to review even when valid measurements meet the threshold", () => {
+    const f = fixture();
+    f.proposals.find((r) => r.ruleId === "hemoglobin")!.status = "not_met";
+    const result = checkScreening(
+      f.patient,
+      checklist,
+      f.proposals,
+      now,
+      "fixture",
+    );
+    expect(result.status).toBe("needs_review");
+    expect(result.rules.find((r) => r.ruleId === "hemoglobin")).toMatchObject({
+      status: "met",
+      review: true,
+      support: "numeric",
+    });
+  });
+
   it("computes all six hand-annotated outcomes without reading expected status in the engine", () => {
     for (const f of buildDemoCohort()) {
       const result =
@@ -298,7 +316,7 @@ describe("property tests (100 generated cases each)", () => {
       ),
       runs,
     ));
-  it("numeric thresholds determine status independently of model claims", () =>
+  it("numeric thresholds determine failures and unsupported model failures require review", () =>
     fc.assert(
       fc.property(
         fc.double({ min: 0, max: 25, noNaN: true }),
@@ -316,7 +334,13 @@ describe("property tests (100 generated cases each)", () => {
           expect(
             checkScreening(f.patient, checklist, f.proposals, now, "fixture")
               .status,
-          ).toBe(value >= 10 ? "likely_match" : "ruled_out");
+          ).toBe(
+            value < 10
+              ? "ruled_out"
+              : status === "not_met"
+                ? "needs_review"
+                : "likely_match",
+          );
         },
       ),
       runs,

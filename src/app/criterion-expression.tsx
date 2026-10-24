@@ -1,5 +1,6 @@
 "use client";
 import type { ChecklistDraft } from "../lib/schemas/ai";
+import { splitCondition, removeConditionBranch } from "../lib/criteria";
 type Rule = ChecklistDraft["rules"][number];
 type Policy = NonNullable<Rule["assessment"]>["conditions"][number];
 /** The coordinator sees and edits the same expression that the evaluator uses. */
@@ -59,7 +60,21 @@ export function CriterionExpression({
                 : "At least one alternative (OR)"}
             </strong>
           )}
-          {node.childIds.map(render)}
+          {node.childIds.map((childId) => (
+            <div key={childId}>
+              {render(childId)}
+              {onChange && rule.assessment && (
+                <button
+                  className="text-button"
+                  onClick={() =>
+                    onChange(removeConditionBranch(rule, id, childId))
+                  }
+                >
+                  Remove this condition branch
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       );
     const policy = rule.assessment?.conditions.find((p) => p.nodeId === id);
@@ -78,7 +93,43 @@ export function CriterionExpression({
         )}
         {policy && (
           <>
-            <small>Original source: {policy.sourceQuote}</small>
+            {onChange ? (
+              <label className="field-label">
+                Exact source for this condition
+                <textarea
+                  value={policy.sourceQuote}
+                  onChange={(e) =>
+                    updatePolicy(id, { sourceQuote: e.target.value })
+                  }
+                />
+              </label>
+            ) : (
+              <small>Original source: {policy.sourceQuote}</small>
+            )}
+            {onChange && (
+              <div className="button-row">
+                <button
+                  className="text-button"
+                  onClick={() =>
+                    onChange(
+                      splitCondition(rule, id, "all", crypto.randomUUID()),
+                    )
+                  }
+                >
+                  Split into required conditions
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() =>
+                    onChange(
+                      splitCondition(rule, id, "any", crypto.randomUUID()),
+                    )
+                  }
+                >
+                  Split into alternatives
+                </button>
+              </div>
+            )}
             {onChange && (
               <label className="field-label">
                 Evidence check

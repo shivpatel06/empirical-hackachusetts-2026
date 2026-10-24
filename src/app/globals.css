@@ -1739,3 +1739,14 @@ textarea {
     padding-left: 0.65rem;
   }
 }
+.extraction-upgrade {
+  padding: 0.8rem 1.2rem;
+  background: #f7f6fb;
+  border-block: 1px solid #e5e2ef;
+}
+.extraction-upgrade p {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #625f72;
+  margin: 0 0 0.5rem;
+}
