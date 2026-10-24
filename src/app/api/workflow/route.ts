@@ -1,6 +1,6 @@
 import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { checklistDraftSchema } from "../../../lib/schemas/ai";
+import { checklistDraftSchema, trialInputSchema } from "../../../lib/schemas/ai";
 import {
   workflow,
   workflowView,
@@ -34,7 +34,7 @@ const action = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("select"),
-      trialId: z.string().regex(/^NCT\d{8}$/),
+      trialId: trialInputSchema.shape.id,
     })
     .strict(),
   z

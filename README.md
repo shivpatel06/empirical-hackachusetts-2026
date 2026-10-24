@@ -42,7 +42,3 @@ npm run build
 ```
 
 Tests use Vitest and fast-check to cover the workflow and evidence, versioning, and approval safeguards.
-
-## Built with Kiro
-
-We used Kiro to refine the requirements and design, check the registry integration, and build the initial Next.js, SQLite, and validation scaffold. The requirements, design, and development tasks are tracked in [`.kiro/`](.kiro/).
