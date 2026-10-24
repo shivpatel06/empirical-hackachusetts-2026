@@ -40,6 +40,13 @@ This implementation plan was prepared by Codex from the user-selected design; wh
 - Browser checked numeric policy save and nested AND/OR rendering in an isolated local database. Existing approved demo records were not edited.
 - Phase 1 remains active: review the complete trial decomposition and resolve the remaining unsupported clinical/event-date evidence workflow before claiming the full phase. Tasks 1.2 and 1.4 remain unchecked.
 
+## Phase 1 applicability checkpoint (October 24, 2026, Codex)
+
+- Fixed a reproduced stale-lab exclusion when a time requirement was detached from its numeric condition. Ambiguous applicability now requires review, with an explanation in the checklist editor. Independent OR alternatives and independently valid failures retain their precedence.
+- Fixed dimensionless ULN policies using the chart's explicit unit and reference upper bound, and preserved supported-measurement/model-failure disagreements in the UI's attention filter.
+- 91 tests, typecheck and production build pass. Added `ai:workflow-smoke` for an isolated real registry → extraction → harness approval → persisted cohort check. One run completed six live jobs with 43 findings each, all requiring review; its harness then failed an incorrect five-call assumption. The assertion is corrected, but a fresh passing command remains unverified because subsequent extraction received OpenAI 429. No clinical validation or human approval is implied.
+- Tasks 1.2/1.4 remain unchecked pending final verification. Unsupported clinical predicates/event dates remain review items; the gap/inbox/reply workflow is still Phase 2.
+
 ## Task Dependency Graph
 
 ```mermaid

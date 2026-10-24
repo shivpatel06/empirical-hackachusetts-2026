@@ -1,7 +1,14 @@
 "use client";
 import { useState } from "react";
-import type { PatientView, WorkflowView } from "../../lib/workflow";
+import type {
+  CheckedRule,
+  PatientView,
+  WorkflowView,
+} from "../../lib/workflow";
 import { formatDate, patientName, patientStatus } from "./presentation";
+
+const needsAttention = (rule: CheckedRule) =>
+  rule.review || rule.status === "unknown" || rule.status === "not_met";
 
 export function EvidenceWorkspace({
   patient,
@@ -14,14 +21,11 @@ export function EvidenceWorkspace({
 }) {
   const screening = patient.screening;
   const [ruleId, setRuleId] = useState(
-    screening?.result.rules.find(
-      (r) => r.status === "unknown" || r.status === "not_met",
-    )?.ruleId ?? screening?.result.rules[0]?.ruleId,
+    screening?.result.rules.find(needsAttention)?.ruleId ??
+      screening?.result.rules[0]?.ruleId,
   );
   const [attention, setAttention] = useState(
-    !!screening?.result.rules.some(
-      (r) => r.status === "unknown" || r.status === "not_met",
-    ),
+    !!screening?.result.rules.some(needsAttention),
   );
   const rules = screening?.result.rules ?? [];
   const rule = rules.find((r) => r.ruleId === ruleId);
@@ -30,22 +34,20 @@ export function EvidenceWorkspace({
   const definition = matchingVersion
     ? view.checklist?.rules.find((r) => r.id === rule?.ruleId)
     : undefined;
-  const shown = rules.filter(
-    (r) => !attention || r.status === "unknown" || r.status === "not_met",
-  );
+  const shown = rules.filter((r) => !attention || needsAttention(r));
   const label = (id: string) =>
     matchingVersion
       ? view.checklist?.rules.find((r) => r.id === id)?.qualification || id
       : id;
   const resultLabel = (status: string, review: boolean) =>
-    status === "met"
-      ? "Supported"
-      : status === "not_met"
-        ? "Not met"
-        : status === "pending"
-          ? "Verify at visit"
-          : review
-            ? "Needs review"
+    review
+      ? "Needs review"
+      : status === "met"
+        ? "Supported"
+        : status === "not_met"
+          ? "Not met"
+          : status === "pending"
+            ? "Verify at visit"
             : "Missing evidence";
   return (
     <div className="cw">
@@ -85,9 +87,11 @@ export function EvidenceWorkspace({
             </p>
           )}
           <p className="cw-sub">
-            {rules.filter((r) => r.status === "met").length} supported ·{" "}
-            {rules.filter((r) => r.status === "unknown").length} unresolved ·{" "}
-            {screening?.result.pendingVisit.length ?? 0} visit checks
+            {rules.filter((r) => r.status === "met" && !r.review).length}{" "}
+            supported ·{" "}
+            {rules.filter((r) => r.status === "unknown" || r.review).length}{" "}
+            unresolved · {screening?.result.pendingVisit.length ?? 0} visit
+            checks
           </p>
         </section>
         <section className="card cw-factcard">
@@ -191,17 +195,20 @@ export function EvidenceWorkspace({
                       }}
                     >
                       <span className="cw-rule__icon" aria-hidden="true">
-                        {r.status === "met"
-                          ? "✓"
-                          : r.status === "not_met"
-                            ? "×"
-                            : r.status === "pending"
-                              ? "○"
-                              : "?"}
+                        {r.review
+                          ? "?"
+                          : r.status === "met"
+                            ? "✓"
+                            : r.status === "not_met"
+                              ? "×"
+                              : r.status === "pending"
+                                ? "○"
+                                : "?"}
                       </span>
                       <span className="cw-rule__body">
                         <span className="cw-rule__top">
-                          {rules.indexOf(r) + 1} · {resultLabel(r.status, r.review)}
+                          {rules.indexOf(r) + 1} ·{" "}
+                          {resultLabel(r.status, r.review)}
                         </span>
                         <span className="cw-rule__text">{label(r.ruleId)}</span>
                       </span>

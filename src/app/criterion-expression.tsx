@@ -1,6 +1,10 @@
 "use client";
 import type { ChecklistDraft } from "../lib/schemas/ai";
-import { splitCondition, removeConditionBranch } from "../lib/criteria";
+import {
+  splitCondition,
+  removeConditionBranch,
+  detachedWindowsFor,
+} from "../lib/criteria";
 type Rule = ChecklistDraft["rules"][number];
 type Policy = NonNullable<Rule["assessment"]>["conditions"][number];
 /** The coordinator sees and edits the same expression that the evaluator uses. */
@@ -93,6 +97,15 @@ export function CriterionExpression({
         )}
         {policy && (
           <>
+            {policy.numeric && detachedWindowsFor(rule, id).length > 0 && (
+              <p className="support-note" role="note">
+                A separate condition specifies a time window. Review which
+                measurements it applies to and attach the window directly to
+                each affected measurement. Retain any other required date
+                checks. This measurement needs review until that relationship is
+                resolved.
+              </p>
+            )}
             {onChange ? (
               <label className="field-label">
                 Exact source for this condition

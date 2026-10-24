@@ -1,5 +1,6 @@
 import type { ChecklistDraft, ChartLine, Patient } from "../../lib/schemas/ai";
 import type { CheckedRule } from "../../lib/workflow";
+import { detachedWindowsFor } from "../../lib/criteria";
 
 type Rule = ChecklistDraft["rules"][number];
 type ConditionResult = NonNullable<CheckedRule["conditions"]>[number];
@@ -19,6 +20,7 @@ export function convertUnit(
     "g/dL",
     "/uL",
     "x10^3/uL",
+    "10^3/uL",
     "10^9/L",
     "x10^9/L",
     "mg/dL",
@@ -38,6 +40,7 @@ export function convertUnit(
     "g/dL": { dimension: "mass", scale: 10 },
     "/uL": { dimension: "count", scale: 1 },
     "x10^3/uL": { dimension: "count", scale: 1000 },
+    "10^3/uL": { dimension: "count", scale: 1000 },
     "10^9/L": { dimension: "count", scale: 1000 },
     "x10^9/L": { dimension: "count", scale: 1000 },
   };
@@ -95,6 +98,10 @@ export function checkAtomicRule(
         return uncertain(
           "This condition requires interpretation of the source and clinical evidence by the coordinator.",
         );
+      if (detachedWindowsFor(rule, policy.nodeId).length)
+        return uncertain(
+          "A separate condition specifies a time window whose measurement applicability is unresolved. Review the source, attach applicable windows directly to each measurement, and retain any other required date checks.",
+        );
       // A relative registration/event date cannot be silently replaced by today.
       if (policy.temporal && policy.temporal.anchor !== "assessment")
         return uncertain(
@@ -135,11 +142,19 @@ export function checkAtomicRule(
         return uncertain("Evidence has an invalid or future timestamp.");
       const measure = (line: ChartLine): boolean | null => {
         const m = line.measurement!;
-        const value = convertUnit(m.value, m.unit, n.unit);
+        // ULN is a dimensionless multiplier. The reported value and its own
+        // reference upper bound share the chart's unit; no normal range is guessed.
+        const ratioUnit =
+          n.usesReferenceUpper &&
+          /^(?:institutional\s+)?(?:ULN|IULN|upper limit of normal)$/i.test(
+            n.unit,
+          );
+        const targetUnit = ratioUnit ? m.unit : n.unit;
+        const value = convertUnit(m.value, m.unit, targetUnit);
         const upper =
           m.referenceUpper === null
             ? null
-            : convertUnit(m.referenceUpper, m.unit, n.unit);
+            : convertUnit(m.referenceUpper, m.unit, targetUnit);
         if (
           value === null ||
           (n.usesReferenceUpper && (upper === null || upper <= 0))

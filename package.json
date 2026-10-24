@@ -16,7 +16,8 @@
     "db:seed": "tsx scripts/db-seed.ts",
     "setup": "npm run db:migrate && npm run db:seed",
     "ai:probe": "NODE_OPTIONS=--conditions=react-server tsx scripts/ai-probe.ts",
-    "ai:smoke": "NODE_OPTIONS=--conditions=react-server tsx scripts/ai-smoke.ts"
+    "ai:smoke": "NODE_OPTIONS=--conditions=react-server tsx scripts/ai-smoke.ts",
+    "ai:workflow-smoke": "NODE_OPTIONS=--conditions=react-server tsx scripts/ai-workflow-smoke.ts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

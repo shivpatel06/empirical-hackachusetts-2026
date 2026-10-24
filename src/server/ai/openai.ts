@@ -79,6 +79,10 @@ logic nodes. Condition nodes have numeric/temporal policies only where explicitl
 All predicates express QUALIFICATION. For an exclusion such as excluded when value > 3,
 the qualification is value <= 3; preserve source polarity=exclusion as metadata. Do not invert twice.
 Place supported thresholds directly on atomic condition nodes.
+Attach each applicable observation window directly to EVERY numeric condition it qualifies,
+including every alternative measurement in an OR. Do not detach a measurement's freshness
+requirement into a sibling condition. Preserve distinct collection/processing requirements
+as additional conditions when they cannot be represented by observation age alone.
 Use analyte names from the source and explicit units. Never encode prose or conditional exceptions
 as a single numeric threshold. Non-numeric policies stay null and require coordinator interpretation.
 Use temporal.anchor=assessment only when the source explicitly uses assessment time. Preserve

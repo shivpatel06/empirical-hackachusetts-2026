@@ -71,11 +71,14 @@ Environment variables are documented in [`.env.example`](.env.example): `OPENAI_
 ```sh
 npm run ai:probe   # real, billable structured-output probes + synthetic scoped-tool smoke
 npm run ai:smoke   # real extraction/screening of three public criterion paragraphs + a synthetic chart
+npm run ai:workflow-smoke # billable full registry import/extraction + six persisted synthetic screening jobs
 ```
 
 The probe tries an ordered, documented model list, verifies access and pins the selected `SCREENING_MODEL` and `GAP_MODEL` in gitignored `data/model-config.json`. Delete that file or rerun the probe to select again after changing accounts. The server's `getAiAdapter()` probes lazily on first live use if no pin exists. Probe receipts stay in `data/`; only model IDs and safe diagnostics are printed. Neither command prints the API key. These commands use a POSIX shell; on other platforms, set Node's `--conditions=react-server` option when running the equivalent `tsx` script.
 
 The successful initial probe selected `gpt-6-astra` for extraction/screening and `gpt-6-luna` for gap investigation. Availability can differ by account. [OpenAI's agent configuration docs](https://developers.openai.com/api/docs/guides/agents/define-agents) describe the structured-output/tool mechanism; installed SDK types are also checked by TypeScript.
+
+The workflow smoke uses a separate in-memory database and explicit test-harness approval. It checks import, unapproved-screen rejection, approval deduplication, persisted live screening, result/version coverage and repeat-screen deduplication. It makes billable API calls and writes its outcome to ignored `data/ai-workflow-smoke.json`; it does not change the application database or establish clinical accuracy or human approval.
 
 See [fixture provenance and expected cases](fixtures/trial-prescreening/README.md). `npm run setup` seeds the trial snapshot, unapproved checklist and six synthetic patients. Fixture assessment time is fixed at October 24, 2026 so the six scenarios remain repeatable. Audit entries use actual execution time.
 

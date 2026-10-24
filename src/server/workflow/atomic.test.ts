@@ -9,7 +9,10 @@ import {
   type ChartLine,
   type RuleOutput,
 } from "../../lib/schemas/ai";
-import { validateCriteriaSource } from "../../lib/criteria";
+import {
+  validateCriteriaSource,
+  removeConditionBranch,
+} from "../../lib/criteria";
 import { demoChecklist, demoTrial } from "../ai/fixtures";
 const now = new Date("2026-10-24T12:00:00Z");
 function input(operator: "all" | "any" = "all") {
@@ -118,6 +121,92 @@ function input(operator: "all" | "any" = "all") {
   return { patient, checklist, proposal, run };
 }
 describe("atomic expression guardrails", () => {
+  it("does not exclude on an old numeric result when its window is a separate AND condition", () => {
+    const x = input();
+    const rule = x.checklist.rules[0]!;
+    rule.expression.nodes[0]!.childIds.push("collection_window");
+    rule.expression.nodes.push({
+      id: "collection_window",
+      operator: "condition",
+      childIds: [],
+      condition: "Specimen collected within 28 days of assessment",
+    });
+    rule.assessment!.conditions.push({
+      nodeId: "collection_window",
+      sourceQuote: rule.sourceQuote,
+      numeric: null,
+      temporal: { maxAgeDays: 28, anchor: "assessment" },
+    });
+    rule.assessment!.conditions[0]!.temporal = null;
+    x.patient.chart[0]!.observedAt = "2025-01-01T12:00:00Z";
+    x.patient.chart[0]!.measurement!.value = 8;
+    expect(x.run().status).toBe("needs_review");
+    expect(
+      x.run().rules[0]!.conditions?.find((c) => c.nodeId === "hb")?.reason,
+    ).toMatch(/separate.*time window/i);
+    // Explicitly move the observation-age requirement onto the numeric policy.
+    rule.assessment!.conditions[0]!.temporal = {
+      maxAgeDays: 28,
+      anchor: "assessment",
+    };
+    x.checklist.rules[0] = removeConditionBranch(
+      rule,
+      "root",
+      "collection_window",
+    );
+    expect(x.run().status).toBe("needs_review"); // old adverse evidence remains unusable
+    x.patient.chart[0]!.observedAt = "2026-10-23T12:00:00Z";
+    expect(x.run().status).toBe("ruled_out"); // now independently applicable
+  });
+  it("keeps a separately supported OR alternative independent of a detached window", () => {
+    const x = input("any");
+    const rule = x.checklist.rules[0]!;
+    rule.expression.nodes[0]!.childIds = ["hb", "timed_bilirubin"];
+    rule.expression.nodes.push(
+      {
+        id: "timed_bilirubin",
+        operator: "all",
+        childIds: ["bili", "window"],
+        condition: null,
+      },
+      {
+        id: "window",
+        operator: "condition",
+        childIds: [],
+        condition: "Additional collection window",
+      },
+    );
+    rule.assessment!.conditions.push({
+      nodeId: "window",
+      sourceQuote: rule.sourceQuote,
+      numeric: null,
+      temporal: { maxAgeDays: 28, anchor: "assessment" },
+    });
+    expect(x.run().status).toBe("likely_match");
+    x.patient.chart[0]!.measurement!.value = 8;
+    expect(x.run().status).toBe("needs_review");
+    // A different, independently supported rule still has exclusion precedence.
+    const independent = structuredClone(input().checklist.rules[0]!);
+    independent.id = "independent";
+    x.checklist.rules.push(independent);
+    const proposal = x.proposal();
+    expect(
+      x.run([proposal, { ...proposal, ruleId: "independent" }]).status,
+    ).toBe("ruled_out");
+  });
+  it("evaluates ULN ratios in the reported measurement unit without inventing a range", () => {
+    const x = input();
+    const policy = x.checklist.rules[0]!.assessment!.conditions[1]!;
+    policy.numeric!.unit = "institutional ULN";
+    expect(x.run().status).toBe("likely_match");
+    x.patient.chart[1]!.measurement!.value = 1.51;
+    expect(x.run().status).toBe("ruled_out");
+    x.patient.chart[1]!.measurement!.referenceUpper = null;
+    expect(x.run().status).toBe("needs_review");
+    x.patient.chart[1]!.measurement!.referenceUpper = 1;
+    x.patient.chart[1]!.measurement!.unit = "unknown";
+    expect(x.run().status).toBe("needs_review");
+  });
   it("evaluates new-trial AND thresholds and ULN independently of model status", () => {
     const x = input();
     x.checklist.rules[0]!.assessment!.conditions[0]!.numeric!.analyte =
@@ -198,6 +287,7 @@ describe("atomic expression guardrails", () => {
     x.patient.chart[0]!.measurement!.unit = "g/L";
     expect(x.run().status).toBe("likely_match");
     expect(convertUnit(1.5, "10^9/L", "/uL")).toBe(1500);
+    expect(convertUnit(1.5, "10^3/uL", "/uL")).toBe(1500);
     expect(convertUnit(1, "g/dL", "mg/dL")).toBeNull();
     expect(convertUnit(1, "g/L", "10^9/L")).toBeNull();
     expect(convertUnit(1, "unknown", "unknown")).toBeNull();

@@ -1,6 +1,39 @@
 import type { ChecklistDraft } from "./schemas/ai";
 type Rule = ChecklistDraft["rules"][number];
 
+/** A standalone time predicate does not say which measurement it qualifies.
+ * Find those predicates in jointly required branches without crossing an OR
+ * into an independent alternative. The coordinator must bind applicability. */
+export function detachedWindowsFor(rule: Rule, nodeId: string): string[] {
+  const nodes = new Map(rule.expression.nodes.map((n) => [n.id, n]));
+  const temporalLeaves = new Set(
+    rule.assessment?.conditions
+      .filter((p) => p.temporal && !p.numeric)
+      .map((p) => p.nodeId),
+  );
+  const descendants = (id: string): string[] => {
+    const node = nodes.get(id)!;
+    return [id, ...node.childIds.flatMap(descendants)];
+  };
+  const result = new Set<string>();
+  const walk = (id: string) => {
+    const node = nodes.get(id)!;
+    const branch = node.childIds.find((child) =>
+      descendants(child).includes(nodeId),
+    );
+    if (!branch) return;
+    if (node.operator === "all") {
+      for (const child of node.childIds.filter((child) => child !== branch)) {
+        for (const leaf of descendants(child))
+          if (temporalLeaves.has(leaf)) result.add(leaf);
+      }
+    }
+    walk(branch);
+  };
+  walk(rule.expression.rootId);
+  return [...result];
+}
+
 export function splitCondition(
   rule: Rule,
   nodeId: string,

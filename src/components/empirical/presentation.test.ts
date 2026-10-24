@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { PatientView, ScreeningStatus } from "../../lib/workflow";
 import { currentStatus, patientStatus, visiblePatients } from "./presentation";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { EvidenceWorkspace } from "./evidence";
+import type { WorkflowView } from "../../lib/workflow";
 
 function patient(
   id: string,
@@ -37,6 +41,48 @@ function patient(
   };
 }
 describe("Empirical server-result presentation", () => {
+  it("shows a supported measurement with a model disagreement in the attention view", () => {
+    const p = patient("patient-01", "needs_review");
+    p.screening!.result.rules = [
+      {
+        ruleId: "hemoglobin",
+        status: "met",
+        review: true,
+        reason: "Model failure disagrees with measured hemoglobin.",
+        citations: [],
+        proposedStatus: "not_met",
+        provenanceVerified: true,
+        support: "numeric",
+      },
+      {
+        ruleId: "history",
+        status: "unknown",
+        review: false,
+        reason: "History missing.",
+        citations: [],
+        proposedStatus: "unknown",
+        provenanceVerified: false,
+        support: "none",
+      },
+    ];
+    const view: WorkflowView = {
+      mode: "fixture",
+      demoMode: true,
+      assessmentAt: "2026-10-24T14:00:00Z",
+      trial: null,
+      trials: [],
+      checklist: null,
+      patients: [p],
+      activity: [],
+      pending: 0,
+    };
+    const html = renderToStaticMarkup(
+      createElement(EvidenceWorkspace, { patient: p, view, onBack() {} }),
+    );
+    expect(html).toContain("Model failure disagrees with measured hemoglobin.");
+    expect(html).toContain("1 · Needs review");
+    expect(html).toContain("0 supported");
+  });
   it("never counts a stale match as a current match", () => {
     const stale = patient("patient-01", "likely_match", true);
     expect(currentStatus(stale)).toBeNull();
