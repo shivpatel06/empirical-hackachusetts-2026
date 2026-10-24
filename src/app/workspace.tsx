@@ -78,10 +78,19 @@ function Badge({
     </span>
   );
 }
-export function Workspace({ initial }: { initial: WorkflowView }) {
+export function Workspace({
+  initial,
+  initialTab,
+  worklistHref,
+}: {
+  initial: WorkflowView;
+  initialTab?: Tab;
+  worklistHref?: string;
+}) {
   const [view, setView] = useState(initial),
     [tab, setTab] = useState<Tab>(
-      initial.checklist?.state === "approved" ? "Worklist" : "Trials",
+      initialTab ??
+        (initial.checklist?.state === "approved" ? "Worklist" : "Trials"),
     );
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -164,6 +173,10 @@ export function Workspace({ initial }: { initial: WorkflowView }) {
   const patient = visible.find((p) => p.id === selected) ?? null;
   const failed = view.patients.some((p) => p.job?.state === "failed");
   const switchTab = (value: Tab) => {
+    if (value === "Worklist" && worklistHref) {
+      window.location.assign(worklistHref);
+      return;
+    }
     setTab(value);
     setSelected(null);
     setFilter("all");

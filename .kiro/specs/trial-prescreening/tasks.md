@@ -277,3 +277,11 @@ Start with 0.1–0.4 and Phase 1, then prove the Phase 2 workflow before polishi
 - Tasks marked with `*` are optional; this plan currently marks none optional because the gates are the acceptance signal.
 - Each task references specific requirements (Rx) for traceability; guardrail and agentic tasks also reference the design's numbered correctness properties.
 - Checkpoints are expressed as per-task gates: ensure the stated checks pass and ask the user if questions arise before checking a box.
+
+
+## Empirical UI integration checkpoint (October 24, 2026, Codex)
+
+- User selected `waccabacca/empirical` as the UI source and confirmed bringing it into this repository. Reused its navigation, appearance, branding and styles; adapted its overview and case layouts to the existing server workflow. Source revision and boundaries are recorded in `docs/empirical-ui.md`.
+- Main workspace now displays persisted candidates, source evidence, current/stale results, archive and activity. The full existing trial/checklist editor remains at `/criteria`; completion routes into Empirical Worklist. Browser-local prototype screening and messaging are not used.
+- Inbox and Outreach expose their unfinished status; no new approval, gap-agent or messaging backend capability is implied. Tasks 2.x/3.x remain pending.
+- Shared working-tree suite: 82 tests pass; typecheck and production build pass. Browser checked isolated fixture approval, all six outcomes, rejected foreign citation, archive, palette/menu navigation and 1440px/390px layouts. This checkpoint adds four UI-presentation tests and no Kiro implementation claim.

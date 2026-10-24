@@ -1,0 +1,147 @@
+/*
+ * Empirical design contract — single source of colour, elevation, shape, motion.
+ *
+ * Layout: no sidebar. A floating top nav island; centred content; every card
+ * floats on soft layered shadow with an inner highlight — no outline borders,
+ * no coloured edge strips. Selection = gentle lift, weight, or underline.
+ * Colour: graphite ink on cool pale neutral + ONE sea-glass green accent (--accent*). Agent vs human is
+ * distinguished by icon/label plus accent (agent) vs ink (human), never a second hue.
+ */
+:root {
+  /* Neutral surfaces */
+  --canvas: #eaf0ef;
+  --canvas-2: #f3f7f6; /* lighter canvas tone behind the top of the page */
+  --card: #ffffff;
+  /* Translucent floating surface: reads as frosted white over the canvas */
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --surface-blur: 18px;
+  --fill: #e3eae8; /* hover, tracks, inputs */
+  --fill-2: #f4f7f6;
+  --separator: rgba(32, 43, 43, 0.08); /* fine internal list dividers only */
+  --dark-card: #1f2928; /* graphite */
+  --dark-line: rgba(255, 255, 255, 0.1);
+  --nav-ink: rgba(255, 255, 255, 0.72);
+
+  /* Ink */
+  --label: #202b2b;
+  --label-2: #566765;
+  --label-3: #93a29f; /* decorative only */
+
+  /* The one accent (palette-swappable) */
+  --accent: #39776c; /* sea-glass green, readable as text */
+  --accent-text: #2f665c;
+  --accent-soft: #dcefea;
+  --accent-mid: #87b8ac; /* decorative */
+  --accent-glass: #c7e3dc;
+  --accent-ink: #ffffff; /* text on --accent */
+
+  /* Human steps / attention use ink, not a second hue */
+  --human: #202b2b;
+  --human-soft: #e3eae8;
+
+  --danger: #b0414a;
+  --danger-soft: #fbeaeb;
+  --mark: #fdf0c4;
+
+  /* Elevation: everything floats */
+  --lift-1: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 1px 2px rgba(32, 43, 43, 0.05),
+    0 6px 16px -4px rgba(32, 43, 43, 0.08), 0 18px 40px -12px rgba(32, 43, 43, 0.12);
+  --lift-2: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(32, 43, 43, 0.05),
+    0 12px 28px -6px rgba(32, 43, 43, 0.12), 0 32px 64px -16px rgba(32, 43, 43, 0.16);
+  --lift-3: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(32, 43, 43, 0.07), 0 24px 48px -8px rgba(32, 43, 43, 0.18),
+    0 48px 96px -24px rgba(32, 43, 43, 0.22);
+  --shadow: var(--lift-1);
+  --shadow-pop: var(--lift-3);
+
+  /* Glass (floating layers only: nav island, menu, sheet controls, dialogs) */
+  --glass: rgba(255, 255, 255, 0.62);
+  --glass-dark: rgba(255, 255, 255, 0.1);
+  --glass-blur: 22px;
+  --glass-shadow: var(--lift-2);
+  --scrim: rgba(15, 16, 20, 0.4);
+
+  --focus: var(--accent);
+  --focus-on-dark: #ffffff;
+
+  /* Type */
+  --font-wordmark: 'Instrument Serif', 'Iowan Old Style', Georgia, serif; /* Empirical wordmark only */
+  --font-display: 'Manrope', 'DM Sans', system-ui, sans-serif; /* headings */
+  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-rounded: ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Shape */
+  --btn-h: 42px;
+  --r-s: 10px;
+  --r-m: 14px;
+  --r-card: 20px;
+  --r-l: 20px;
+  --r-panel: 26px;
+  --r-pill: 999px;
+  --content-w: 1120px;
+  --gutter: 32px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1); /* menu reveal, underline, toggle morph */
+  --dur: 180ms;
+  --dur-slide: 300ms;
+}
+
+/*
+ * Palettes (Appearance menu). Each swaps only neutrals, ink and the single accent;
+ * status semantics, elevation, glass and motion are shared. Default = Sea glass (:root).
+ */
+:root[data-theme='slate'] {
+  --canvas: #e9edf2;
+  --canvas-2: #f3f5f8;
+  --fill: #e1e6ed;
+  --fill-2: #f3f5f8;
+  --dark-card: #1d2431;
+  --label: #1e2633;
+  --label-2: #535f70;
+  --label-3: #8f99a8;
+  --accent: #44628f; /* muted cool blue */
+  --accent-text: #3a567e;
+  --accent-soft: #dfe6f1;
+  --accent-mid: #8fa3c2;
+  --accent-glass: #c7d3e6;
+  --human: #1e2633;
+  --human-soft: #e1e6ed;
+}
+:root[data-theme='stone'] {
+  --canvas: #efebe4;
+  --canvas-2: #f7f4ef;
+  --fill: #e7e1d7;
+  --fill-2: #f6f3ee;
+  --dark-card: #2b2722;
+  --label: #2a2621;
+  --label-2: #655d52;
+  --label-3: #a39a8c;
+  --accent: #8a6a43; /* restrained bronze */
+  --accent-text: #745734;
+  --accent-soft: #efe6d9;
+  --accent-mid: #c3a986;
+  --accent-glass: #e1d3bd;
+  --human: #2a2621;
+  --human-soft: #e7e1d7;
+}
+
+/* Appearance swatches: canvas disc with the palette's accent dot (fixed per option, not theme-dependent). */
+.swatch--sea {
+  --sw-bg: #eaf0ef;
+  --sw-dot: #39776c;
+  --sw-ink: #202b2b;
+}
+.swatch--slate {
+  --sw-bg: #e9edf2;
+  --sw-dot: #44628f;
+  --sw-ink: #1e2633;
+}
+.swatch--stone {
+  --sw-bg: #efebe4;
+  --sw-dot: #8a6a43;
+  --sw-ink: #2a2621;
+}

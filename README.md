@@ -14,7 +14,8 @@ Trial Prescreening Agent helps oncology research coordinators start with a trial
 - ClinicalTrials.gov import by NCT ID, explicit extraction mode, immutable registry snapshots and trial selection.
 - Versioned checklist editing and approval, deduplicated screening jobs, immutable chart lines and an append-only audit log.
 - Citation, observation-date, numeric-unit, conflict and stale-version checks with inspectable patient findings.
-- Responsive coordinator UI with Trials, Worklist, Archive and Activity views.
+- Empirical coordinator UI with Overview, Worklist, Archive, Activity, searchable candidates and a source-evidence workspace.
+- Complete trial import, checklist editing and approval at `/criteria`. Inbox and Outreach disclose their unfinished backend integration.
 
 The repeatable demo uses the seeded NCT06116682 snapshot. Registry import creates an unapproved draft using live structured extraction; unchanged imports preserve the existing checklist. New live extraction supplies atomic condition policies and reviewable AND/OR trees. Full-trial decomposition review, generalized clinical evidence interpretation, and the gap/inbox/reply workflow remain unfinished. Model outputs are proposals, not final eligibility decisions.
 
@@ -22,13 +23,17 @@ The repeatable demo uses the seeded NCT06116682 snapshot. Registry import create
 
 Public deployment and demo video are pending. Run locally, then:
 
-1. Open **Trials** and inspect the 42 source-preserving demo criteria.
+1. From **Overview**, choose **Review checklist** (or **Inspect trial criteria**) to open `/criteria` and inspect the 42 source-preserving demo criteria.
 2. Confirm availability at the **synthetic demo program**, then choose **Approve & screen cohort**.
-3. Open **Worklist**: Patient 01 is a potential match; 03 has stale evidence; 04 lacks treatment history; 05 has a rejected foreign citation.
-4. Open **Archive** for Patient 02 (hemoglobin below threshold) and 06 (unrelated cancer type).
+3. Return to **Empirical overview** and open **Worklist** from the top navigation or menu: Patient 01 is a potential match; 03 has stale evidence; 04 lacks treatment history; 05 has a rejected foreign citation.
+4. Choose **View exclusion archive** (also available in the menu) for Patient 02 (hemoglobin below threshold) and 06 (unrelated cancer type).
 5. Inspect **Activity**. Rechecking the same cohort does not duplicate jobs.
 
 A fresh database starts with an unapproved checklist. Setup is idempotent and does not reset approvals. To rehearse from a fresh state without deleting your history, set `DATABASE_PATH` to a new local file, run setup, and restart the server.
+
+## UI source
+
+The interface is adapted from [waccabacca/empirical](https://github.com/waccabacca/empirical), preserving its floating navigation, palettes, fonts and evidence layout. This integration uses the existing server workflow and SQLite data. The original prototype's browser-only screening, timed agent simulations and messaging transitions are not used. See [integration provenance and boundaries](docs/empirical-ui.md). Integration work was performed with Codex; it adds no new Kiro implementation claim.
 
 ## Tech stack
 

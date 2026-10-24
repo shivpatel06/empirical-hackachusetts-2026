@@ -1,0 +1,53 @@
+body {
+  background: var(--canvas);
+  font-family: var(--font);
+  color: var(--label);
+}
+.criteria-review {
+  --ink: var(--label);
+  --muted: var(--label-2);
+  --line: var(--separator);
+  --purple: var(--accent);
+}
+.criteria-review h1,
+.criteria-review h2,
+.criteria-review h3 {
+  font-family: var(--font-display);
+}
+.empirical-return {
+  display: block;
+  padding: 16px 28px;
+  background: var(--surface);
+  color: var(--accent-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+.criteria-review .sidebar {
+  display: none;
+}
+.criteria-review .workspace {
+  margin-left: 0;
+  width: 100%;
+}
+.criteria-review .app-shell {
+  display: block;
+}
+.criteria-review main {
+  max-width: 1360px;
+  margin-inline: auto;
+}
+.criteria-review .button {
+  background: var(--label);
+  border-radius: var(--r-pill);
+}
+.criteria-review .button.secondary {
+  background: var(--card);
+  color: var(--label);
+}
+.criteria-review
+  :is(.trial-card, .criteria-panel, .approval-panel, .import-panel) {
+  border: 0;
+  box-shadow: var(--lift-1);
+  border-radius: var(--r-card);
+  background: var(--surface);
+}

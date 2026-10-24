@@ -1,4 +1,9 @@
-import { Workspace } from "./workspace";
+import { EmpiricalWorkspace as Workspace } from "../components/empirical/workspace";
+import "../components/empirical/styles/tokens.css";
+import "../components/empirical/styles/app.css";
+import "../components/empirical/styles/lists.css";
+import "../components/empirical/styles/case.css";
+import "../components/empirical/styles/integration.css";
 import { workflow } from "../server/workflow/runtime";
 export const dynamic = "force-dynamic";
 export default function Home() {
