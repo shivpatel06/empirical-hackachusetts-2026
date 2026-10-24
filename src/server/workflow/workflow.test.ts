@@ -13,6 +13,7 @@ import {
   DEMO_TIME,
 } from "../ai/fixtures";
 import { FixtureAdapter } from "../ai/fixture-adapter";
+import { AiAdapterError } from "../ai/contracts";
 import type { ChecklistInput, RuleOutput } from "../../lib/schemas/ai";
 
 const now = new Date(DEMO_TIME),
@@ -453,12 +454,21 @@ describe("persisted approval/event workflow", () => {
     store.approve(1, 1, true);
     const adapter = new FixtureAdapter();
     adapter.screen = async () => {
-      throw new Error("secret-provider-payload");
+      throw new AiAdapterError({
+        status: 429,
+        message: "secret-provider-payload",
+      });
     };
     while (await store.processNext(adapter)) {}
     expect(
       store.view().patients.filter((p) => p.job?.state === "failed"),
     ).toHaveLength(5);
+    expect(
+      store
+        .view()
+        .patients.filter((p) => p.job?.state === "failed")
+        .every((p) => p.job?.error === "OpenAI rate or quota limit (429)."),
+    ).toBe(true);
     expect(JSON.stringify(store.view())).not.toContain(
       "secret-provider-payload",
     );

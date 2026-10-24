@@ -209,6 +209,31 @@ describe("actual SDK runner with deterministic test models", () => {
     ).rejects.toThrow();
     expect(calls()).toBe(0);
   });
+  it("preserves safe provider status labels through downstream error handling", async () => {
+    const { adapter } = mockAdapter(() => {
+      throw Object.assign(new Error("private provider request and sk-secret"), {
+        status: 429,
+      });
+    });
+    for (const run of [
+      () => adapter.extract(demoTrial),
+      () => adapter.screen(patient, checklist),
+    ]) {
+      let failure: unknown;
+      try {
+        await run();
+      } catch (error) {
+        failure = error;
+      }
+      expect(safeAiError(failure)).toBe("OpenAI rate or quota limit (429).");
+      expect(String(failure)).not.toContain("sk-secret");
+      expect(
+        safeAiError(
+          new Error("OpenAI rate or quota limit (429). private-data"),
+        ),
+      ).not.toContain("private-data");
+    }
+  });
 });
 
 describe("model selection", () => {

@@ -10,6 +10,7 @@ import { WorkflowStore } from "../workflow/store";
 import { FixtureAdapter } from "../ai/fixture-adapter";
 import { demoChecklist, demoTrial, DEMO_TIME } from "../ai/fixtures";
 import type { AiAdapter } from "../ai/contracts";
+import { AiAdapterError } from "../ai/contracts";
 const clock = () => new Date(DEMO_TIME),
   dbs: Db[] = [];
 afterEach(() => {
@@ -142,6 +143,31 @@ describe("ClinicalTrials.gov adapter", () => {
 });
 
 describe("transactional import and trial switching", () => {
+  it("shows the safe provider failure while preserving the existing approved checklist", async () => {
+    const store = setup();
+    store.approve(1, 1, true);
+    const adapter = fakeLive();
+    adapter.extract = async () => {
+      throw new AiAdapterError({
+        status: 429,
+        message: "secret provider payload",
+      });
+    };
+    await expect(
+      importTrial(
+        store,
+        demoTrial.id,
+        "live",
+        async () => adapter,
+        response(),
+        { id: 1, revision: 1 },
+      ),
+    ).rejects.toThrow("OpenAI rate or quota limit (429).");
+    expect(store.checklist()).toMatchObject({ id: 1, state: "approved" });
+    expect(JSON.stringify(store.view())).not.toContain(
+      "secret provider payload",
+    );
+  });
   it("explicit re-extraction creates an unapproved version even when registry content is unchanged", async () => {
     const store = setup();
     store.approve(1, 1, true);

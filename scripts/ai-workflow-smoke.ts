@@ -46,9 +46,7 @@ async function main() {
       try {
         return await originalExtract(trial);
       } catch (error) {
-        // OpenAiAdapter already sanitizes provider errors; preserve its useful
-        // auth/quota/schema label instead of sanitizing that safe label again.
-        failure = error instanceof Error ? error.message : safeAiError(error);
+        failure = safeAiError(error);
         throw error;
       }
     };

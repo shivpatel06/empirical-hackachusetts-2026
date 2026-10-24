@@ -1,4 +1,5 @@
 import type { AiAdapter } from "../ai/contracts";
+import { safeAiError } from "../ai/contracts";
 import type { WorkflowStore } from "../workflow/store";
 import { WorkflowError } from "../workflow/store";
 import { fetchTrial, validateNctId, type RegistryTrial } from "./registry";
@@ -41,11 +42,11 @@ export async function importTrial(
         criteriaText: trial.criteriaText,
       }),
     );
-  } catch {
+  } catch (error) {
     throw new WorkflowError(
       mode === "fixture"
         ? "This registry snapshot has no fixture extraction. Choose Live AI to import and extract this trial."
-        : "Criteria extraction failed. No trial or draft was replaced. Check AI configuration and retry.",
+        : `Criteria extraction failed. ${safeAiError(error)} No trial or draft was replaced.`,
       502,
     );
   }

@@ -16,7 +16,12 @@ import {
   type Patient,
   type TrialInput,
 } from "../../lib/schemas/ai";
-import { type AiAdapter, type UnresolvedRule, safeAiError } from "./contracts";
+import {
+  type AiAdapter,
+  type UnresolvedRule,
+  safeAiError,
+  AiAdapterError,
+} from "./contracts";
 import { GapSession, gapParameters, type GapToolName } from "./gap-tools";
 import {
   extractionTransportSchema,
@@ -110,7 +115,7 @@ Return a draft only. Coordinator approval is required before screening.`,
       );
       return expandExtraction(trial.criteriaText, result.finalOutput);
     } catch (error) {
-      throw new Error(safeAiError(error));
+      throw new AiAdapterError(error);
     }
   }
 
@@ -141,7 +146,7 @@ Return unknown without citations for verify-at-visit rules.`,
       );
       return screeningOutputSchema.parse(result.finalOutput).results;
     } catch (error) {
-      throw new Error(safeAiError(error));
+      throw new AiAdapterError(error);
     }
   }
 
