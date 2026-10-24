@@ -87,7 +87,7 @@ Model access and credentials stay behind the server. Patient data and model call
 
 ### React views
 
-Inbox, Worklist, Trials, Ruled-out archive, Activity, and a patient/trial evidence detail panel. Each view shows synthetic-data labeling and the current integration mode (real vs fixture), with accessible status text, keyboard navigation, and visible loading, empty, stale, and error states.
+Inbox, Worklist, Trials, Ruled-out archive, Activity, and a patient/trial evidence detail panel. Each view shows a discreet Sample workspace disclosure and the current integration mode (live AI vs sample), with accessible status text, keyboard navigation, and visible loading, empty, stale, and error states. Fictional names and readable document titles make the sample records approachable; original source metadata and exact chart text remain inspectable. Repeated synthetic/demo disclaimers in routine cards and drafts are unnecessary under the user's October 24 presentation refinement.
 
 ### Thin AI interface signatures
 

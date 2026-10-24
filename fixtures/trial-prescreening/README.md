@@ -7,6 +7,8 @@ Public trial: [NCT06116682 / S1900J](https://clinicaltrials.gov/study/NCT0611668
 - `checklist-draft.json`: hand-authored fixture draft retaining all 42 top-level eligibility paragraphs and their nested notes. Each complete paragraph remains an opaque condition; this is not a clinically reviewed, atomic extraction. The live extractor supports explicit AND/OR nodes; decomposition and coordinator approval belong to task 1.2. No paragraph may be silently dropped when that work is done.
 - `cohort.json`: six hand-authored synthetic cases, expected statuses, and deterministic model proposals. Authored by Codex before any model execution on this cohort. Not Synthea output, real patient records, or measured clinical accuracy.
 
+The workspace presents these cases as Marcus Bell, Walter Hughes, Elena Rivera, Daniel Kim, Grace Okafor and Robert Chen. These names and the named clinicians are fictional presentation profiles in `src/lib/sample-profiles.ts`; stable IDs, clinical measurements, chart text and citation checks are unchanged. Readable document titles appear in the evidence view, with original source metadata under **Read full source**. The **Sample workspace** disclosure explains the fictional records and local-only delivery once, rather than repeating warnings on each card.
+
 | Case | Expected result after future guardrails | Deliberate condition |
 | --- | --- | --- |
 | synthetic-01 | likely_match, with visit checks pending | Supported chart evidence |

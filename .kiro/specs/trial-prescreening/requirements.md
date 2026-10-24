@@ -61,7 +61,7 @@ The supplied impact figures from source-design.txt (approximately 7.5 hours per 
 
 #### Acceptance Criteria
 
-1. THE System SHALL label every screen as using synthetic demo data.
+1. THE System SHALL show one discreet "Sample workspace" indicator on each workspace screen, with expandable details that records and identities are fictional and deliveries are simulated. Repeated synthetic/demo disclaimers in routine patient cards, actions and drafts are not required. Live AI and prepared sample runs SHALL remain distinguishable. This presentation refinement was requested by the user on October 24, 2026; synthetic-only data and approval boundaries remain unchanged.
 2. THE System SHALL NOT import real patient data or connect to a hospital system in this version.
 3. THE System SHALL store each patient with a stable ID, cancer type, clinician, next visit, and append-only chart lines.
 4. THE System SHALL store each chart line with a stable line ID, record revision, source, clinical observation date, ingestion date, and original text.
