@@ -128,7 +128,7 @@ describe("agent journey", () => {
         note: "Skip steps",
       }),
     ).toThrow();
-    for (const item of drafts)
+    for (const item of drafts.filter((item) => item.kind === "physician"))
       journey.action({
         action: "item",
         id: item.id,
@@ -277,6 +277,7 @@ describe("agent journey", () => {
     });
     for (const stage of [
       "doctor_responded",
+      "doctor_agreed",
       "discussed_at_visit",
       "patient_interested",
       "consent_visit_scheduled",
@@ -292,6 +293,11 @@ describe("agent journey", () => {
         stage,
         note: "Synthetic outcome entered by coordinator.",
       });
+      if (stage === "doctor_agreed") {
+        const summary = journey.view().items.find((item) => item.kind === "summary")!;
+        journey.action({ action: "item", id: summary.id, revision: summary.revision, decision: "approve" });
+        expect(journey.view().cases[0]!.stage).toBe("patient_contacted");
+      }
       if (stage === "patient_interested") {
         journey.action({ action: "advance_clock", days: 5 });
         expect(

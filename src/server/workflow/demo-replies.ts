@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
+import { buildLumenCohort } from "../ai/lumen-fixture";
 import { buildDemoCohort, DEMO_TIME } from "../ai/fixtures";
 import type { ChartLine, Patient } from "../../lib/schemas/ai";
 /** Two explicit authored reply scenarios. Never manufacture a result from an arbitrary model request. */
@@ -8,11 +9,11 @@ export function demoReply(
   revision: number,
 ): ChartLine | null {
   if (
-    patientId !== "synthetic-03" ||
+    !["synthetic-03", "lumen-03"].includes(patientId) ||
     !["hemoglobin", "brain_imaging"].includes(ruleId)
   )
     return null;
-  const original = buildDemoCohort()[2]!.patient.chart.find(
+  const original = (patientId.startsWith("lumen-") ? buildLumenCohort() : buildDemoCohort())[2]!.patient.chart.find(
     (l) => l.id === `${patientId}-${ruleId}`,
   )!;
   return {
@@ -25,8 +26,8 @@ export function demoReply(
   };
 }
 export function fixtureWithReplies(patient: Patient) {
-  const base = buildDemoCohort().find((c) => c.patient.id === patient.id);
-  if (!base || patient.id !== "synthetic-03") return null;
+  const base = (patient.id.startsWith("lumen-") ? buildLumenCohort() : buildDemoCohort()).find((c) => c.patient.id === patient.id);
+  if (!base || !["synthetic-03", "lumen-03"].includes(patient.id)) return null;
   const extra = patient.chart.filter(
     (l) => !base.patient.chart.some((b) => b.id === l.id),
   );

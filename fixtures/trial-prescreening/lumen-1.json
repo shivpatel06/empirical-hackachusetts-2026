@@ -1,0 +1,1124 @@
+{
+  "provenance": "Fictional study and patient records authored for the recorded Empirical walkthrough. Not a registered study or clinical guidance.",
+  "trial": {
+    "id": "LUMEN-1",
+    "title": "LUMEN-1 \u00b7 Immunotherapy for Stage IV Lung Cancer",
+    "criteriaText": "Stage IV non-small cell lung cancer is required.\n\nPatients must have no prior PD-1 or PD-L1 inhibitor treatment, including pembrolizumab.\n\nBrain MRI within 28 days must show no active brain metastases.\n\nHemoglobin must be at least 10 g/dL, measured within 28 days.\n\nPlatelet count must be at least 100 x10^9/L, measured within 28 days.\n\nECOG performance status must be 0 or 1.\n\nInformed consent and final eligibility must be confirmed before enrollment.",
+    "sourceUrl": "https://github.com/shivpatel06/empirical-hackachusetts-2026/blob/main/fixtures/trial-prescreening/lumen-1.json"
+  },
+  "checklist": {
+    "rules": [
+      {
+        "id": "nsclc_met",
+        "sourceQuote": "Stage IV non-small cell lung cancer is required.",
+        "qualification": "Stage IV non-small cell lung cancer is required.",
+        "polarity": "inclusion",
+        "category": "clinical",
+        "evidenceDescription": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma.",
+        "chartCheckable": true,
+        "expression": {
+          "rootId": "nsclc_met",
+          "nodes": [
+            {
+              "id": "nsclc_met",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "Stage IV non-small cell lung cancer is required."
+            }
+          ]
+        },
+        "numeric": null,
+        "temporal": null
+      },
+      {
+        "id": "no_prior_immunotherapy",
+        "sourceQuote": "Patients must have no prior PD-1 or PD-L1 inhibitor treatment, including pembrolizumab.",
+        "qualification": "Patients must have no prior PD-1 or PD-L1 inhibitor treatment, including pembrolizumab.",
+        "polarity": "exclusion",
+        "category": "treatment",
+        "evidenceDescription": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment.",
+        "chartCheckable": true,
+        "expression": {
+          "rootId": "no_prior_immunotherapy",
+          "nodes": [
+            {
+              "id": "no_prior_immunotherapy",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "Patients must have no prior PD-1 or PD-L1 inhibitor treatment, including pembrolizumab."
+            }
+          ]
+        },
+        "numeric": null,
+        "temporal": null
+      },
+      {
+        "id": "brain_imaging",
+        "sourceQuote": "Brain MRI within 28 days must show no active brain metastases.",
+        "qualification": "Brain MRI within 28 days must show no active brain metastases.",
+        "polarity": "inclusion",
+        "category": "clinical",
+        "evidenceDescription": "Brain MRI shows no active brain metastases.",
+        "chartCheckable": true,
+        "expression": {
+          "rootId": "brain_imaging",
+          "nodes": [
+            {
+              "id": "brain_imaging",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "Brain MRI within 28 days must show no active brain metastases."
+            }
+          ]
+        },
+        "numeric": null,
+        "temporal": {
+          "maxAgeDays": 28,
+          "anchor": "assessment"
+        }
+      },
+      {
+        "id": "hemoglobin",
+        "sourceQuote": "Hemoglobin must be at least 10 g/dL, measured within 28 days.",
+        "qualification": "Hemoglobin must be at least 10 g/dL, measured within 28 days.",
+        "polarity": "inclusion",
+        "category": "laboratory",
+        "evidenceDescription": "Hemoglobin 12.4 g/dL.",
+        "chartCheckable": true,
+        "expression": {
+          "rootId": "hemoglobin",
+          "nodes": [
+            {
+              "id": "hemoglobin",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "Hemoglobin must be at least 10 g/dL, measured within 28 days."
+            }
+          ]
+        },
+        "numeric": {
+          "analyte": "hemoglobin",
+          "operator": ">=",
+          "value": 10,
+          "unit": "g/dL",
+          "usesReferenceUpper": false
+        },
+        "temporal": {
+          "maxAgeDays": 28,
+          "anchor": "assessment"
+        }
+      },
+      {
+        "id": "platelets",
+        "sourceQuote": "Platelet count must be at least 100 x10^9/L, measured within 28 days.",
+        "qualification": "Platelet count must be at least 100 x10^9/L, measured within 28 days.",
+        "polarity": "inclusion",
+        "category": "laboratory",
+        "evidenceDescription": "Platelets 182 x10^9/L.",
+        "chartCheckable": true,
+        "expression": {
+          "rootId": "platelets",
+          "nodes": [
+            {
+              "id": "platelets",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "Platelet count must be at least 100 x10^9/L, measured within 28 days."
+            }
+          ]
+        },
+        "numeric": {
+          "analyte": "platelets",
+          "operator": ">=",
+          "value": 100,
+          "unit": "x10^9/L",
+          "usesReferenceUpper": false
+        },
+        "temporal": {
+          "maxAgeDays": 28,
+          "anchor": "assessment"
+        }
+      },
+      {
+        "id": "performance",
+        "sourceQuote": "ECOG performance status must be 0 or 1.",
+        "qualification": "ECOG performance status must be 0 or 1.",
+        "polarity": "inclusion",
+        "category": "clinical",
+        "evidenceDescription": "ECOG performance status is 1.",
+        "chartCheckable": true,
+        "expression": {
+          "rootId": "performance",
+          "nodes": [
+            {
+              "id": "performance",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "ECOG performance status must be 0 or 1."
+            }
+          ]
+        },
+        "numeric": null,
+        "temporal": null
+      },
+      {
+        "id": "consent",
+        "sourceQuote": "Informed consent and final eligibility must be confirmed before enrollment.",
+        "qualification": "Informed consent and final eligibility must be confirmed before enrollment.",
+        "polarity": "inclusion",
+        "category": "visit",
+        "evidenceDescription": "Formal eligibility and consent review remain pending.",
+        "chartCheckable": false,
+        "expression": {
+          "rootId": "consent",
+          "nodes": [
+            {
+              "id": "consent",
+              "operator": "condition",
+              "childIds": [],
+              "condition": "Informed consent and final eligibility must be confirmed before enrollment."
+            }
+          ]
+        },
+        "numeric": null,
+        "temporal": null
+      }
+    ]
+  },
+  "priorImmunotherapyEvidence": "Treatment administration record: pembrolizumab 200 mg IV given on September 12, 2026.",
+  "cases": [
+    {
+      "id": "lumen-01",
+      "diagnosis": "stage IV non-small cell lung adenocarcinoma",
+      "clinician": "Demo oncology team",
+      "nextVisitDays": 1,
+      "chart": [
+        {
+          "id": "lumen-01-nsclc_met",
+          "patientId": "lumen-01",
+          "text": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma.",
+          "source": "Pathology and staging report",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-01-no_prior_immunotherapy",
+          "patientId": "lumen-01",
+          "text": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment.",
+          "source": "Oncology treatment administration history",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-01-brain_imaging",
+          "patientId": "lumen-01",
+          "text": "Brain MRI shows no active brain metastases.",
+          "source": "Radiology \u00b7 Brain MRI",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-01-hemoglobin",
+          "patientId": "lumen-01",
+          "text": "Hemoglobin 12.4 g/dL.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "hemoglobin",
+            "value": 12.4,
+            "unit": "g/dL",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-01-platelets",
+          "patientId": "lumen-01",
+          "text": "Platelets 182 x10^9/L.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "platelets",
+            "value": 182,
+            "unit": "x10^9/L",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-01-performance",
+          "patientId": "lumen-01",
+          "text": "ECOG performance status is 1.",
+          "source": "Oncology clinic assessment",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        }
+      ],
+      "outsideRecords": [],
+      "proposedOutputs": [
+        {
+          "ruleId": "nsclc_met",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-01-nsclc_met",
+              "quote": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "no_prior_immunotherapy",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-01-no_prior_immunotherapy",
+              "quote": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "brain_imaging",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-01-brain_imaging",
+              "quote": "Brain MRI shows no active brain metastases."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "hemoglobin",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-01-hemoglobin",
+              "quote": "Hemoglobin 12.4 g/dL."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "platelets",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-01-platelets",
+              "quote": "Platelets 182 x10^9/L."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "performance",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-01-performance",
+              "quote": "ECOG performance status is 1."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "consent",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Confirm at the study visit."
+        }
+      ],
+      "scenario": "supported match",
+      "expectedStatus": "likely_match",
+      "expectedPendingVisitRules": [
+        "consent"
+      ]
+    },
+    {
+      "id": "lumen-02",
+      "diagnosis": "stage IV non-small cell lung adenocarcinoma",
+      "clinician": "Demo oncology team",
+      "nextVisitDays": 2,
+      "chart": [
+        {
+          "id": "lumen-02-nsclc_met",
+          "patientId": "lumen-02",
+          "text": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma.",
+          "source": "Pathology and staging report",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-02-no_prior_immunotherapy",
+          "patientId": "lumen-02",
+          "text": "Treatment administration record: pembrolizumab 200 mg IV given on September 12, 2026.",
+          "source": "Oncology treatment administration history",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-02-brain_imaging",
+          "patientId": "lumen-02",
+          "text": "Brain MRI shows no active brain metastases.",
+          "source": "Radiology \u00b7 Brain MRI",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-02-hemoglobin",
+          "patientId": "lumen-02",
+          "text": "Hemoglobin 12.4 g/dL.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "hemoglobin",
+            "value": 12.4,
+            "unit": "g/dL",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-02-platelets",
+          "patientId": "lumen-02",
+          "text": "Platelets 182 x10^9/L.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "platelets",
+            "value": 182,
+            "unit": "x10^9/L",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-02-performance",
+          "patientId": "lumen-02",
+          "text": "ECOG performance status is 1.",
+          "source": "Oncology clinic assessment",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        }
+      ],
+      "outsideRecords": [],
+      "proposedOutputs": [
+        {
+          "ruleId": "nsclc_met",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-02-nsclc_met",
+              "quote": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "no_prior_immunotherapy",
+          "status": "not_met",
+          "citations": [
+            {
+              "lineId": "lumen-02-no_prior_immunotherapy",
+              "quote": "Treatment administration record: pembrolizumab 200 mg IV given on September 12, 2026."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "brain_imaging",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-02-brain_imaging",
+              "quote": "Brain MRI shows no active brain metastases."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "hemoglobin",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-02-hemoglobin",
+              "quote": "Hemoglobin 12.4 g/dL."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "platelets",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-02-platelets",
+              "quote": "Platelets 182 x10^9/L."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "performance",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-02-performance",
+              "quote": "ECOG performance status is 1."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "consent",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Confirm at the study visit."
+        }
+      ],
+      "scenario": "prior pembrolizumab exclusion",
+      "expectedStatus": "ruled_out",
+      "expectedPendingVisitRules": [
+        "consent"
+      ]
+    },
+    {
+      "id": "lumen-03",
+      "diagnosis": "stage IV non-small cell lung adenocarcinoma",
+      "clinician": "Demo oncology team",
+      "nextVisitDays": 3,
+      "chart": [
+        {
+          "id": "lumen-03-nsclc_met",
+          "patientId": "lumen-03",
+          "text": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma.",
+          "source": "Pathology and staging report",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-03-no_prior_immunotherapy",
+          "patientId": "lumen-03",
+          "text": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment.",
+          "source": "Oncology treatment administration history",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-03-brain_imaging",
+          "patientId": "lumen-03",
+          "text": "Brain MRI shows no active brain metastases.",
+          "source": "Radiology \u00b7 Brain MRI",
+          "observedDays": -60,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-03-hemoglobin",
+          "patientId": "lumen-03",
+          "text": "Hemoglobin 12.4 g/dL.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -60,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "hemoglobin",
+            "value": 12.4,
+            "unit": "g/dL",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-03-platelets",
+          "patientId": "lumen-03",
+          "text": "Platelets 182 x10^9/L.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "platelets",
+            "value": 182,
+            "unit": "x10^9/L",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-03-performance",
+          "patientId": "lumen-03",
+          "text": "ECOG performance status is 1.",
+          "source": "Oncology clinic assessment",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        }
+      ],
+      "outsideRecords": [],
+      "proposedOutputs": [
+        {
+          "ruleId": "nsclc_met",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-03-nsclc_met",
+              "quote": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "no_prior_immunotherapy",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-03-no_prior_immunotherapy",
+              "quote": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "brain_imaging",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-03-brain_imaging",
+              "quote": "Brain MRI shows no active brain metastases."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "hemoglobin",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-03-hemoglobin",
+              "quote": "Hemoglobin 12.4 g/dL."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "platelets",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-03-platelets",
+              "quote": "Platelets 182 x10^9/L."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "performance",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-03-performance",
+              "quote": "ECOG performance status is 1."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "consent",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Confirm at the study visit."
+        }
+      ],
+      "scenario": "stale laboratory and imaging records",
+      "expectedStatus": "needs_info",
+      "expectedPendingVisitRules": [
+        "consent"
+      ]
+    },
+    {
+      "id": "lumen-04",
+      "diagnosis": "stage IV non-small cell lung adenocarcinoma",
+      "clinician": "Demo oncology team",
+      "nextVisitDays": 4,
+      "chart": [
+        {
+          "id": "lumen-04-nsclc_met",
+          "patientId": "lumen-04",
+          "text": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma.",
+          "source": "Pathology and staging report",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-04-brain_imaging",
+          "patientId": "lumen-04",
+          "text": "Brain MRI shows no active brain metastases.",
+          "source": "Radiology \u00b7 Brain MRI",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-04-hemoglobin",
+          "patientId": "lumen-04",
+          "text": "Hemoglobin 12.4 g/dL.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "hemoglobin",
+            "value": 12.4,
+            "unit": "g/dL",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-04-platelets",
+          "patientId": "lumen-04",
+          "text": "Platelets 182 x10^9/L.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "platelets",
+            "value": 182,
+            "unit": "x10^9/L",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-04-performance",
+          "patientId": "lumen-04",
+          "text": "ECOG performance status is 1.",
+          "source": "Oncology clinic assessment",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        }
+      ],
+      "outsideRecords": [],
+      "proposedOutputs": [
+        {
+          "ruleId": "nsclc_met",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-04-nsclc_met",
+              "quote": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "no_prior_immunotherapy",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Complete treatment history is missing."
+        },
+        {
+          "ruleId": "brain_imaging",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-04-brain_imaging",
+              "quote": "Brain MRI shows no active brain metastases."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "hemoglobin",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-04-hemoglobin",
+              "quote": "Hemoglobin 12.4 g/dL."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "platelets",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-04-platelets",
+              "quote": "Platelets 182 x10^9/L."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "performance",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-04-performance",
+              "quote": "ECOG performance status is 1."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "consent",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Confirm at the study visit."
+        }
+      ],
+      "scenario": "missing treatment history",
+      "expectedStatus": "needs_info",
+      "expectedPendingVisitRules": [
+        "consent"
+      ]
+    },
+    {
+      "id": "lumen-05",
+      "diagnosis": "stage IV non-small cell lung adenocarcinoma",
+      "clinician": "Demo oncology team",
+      "nextVisitDays": 5,
+      "chart": [
+        {
+          "id": "lumen-05-nsclc_met",
+          "patientId": "lumen-05",
+          "text": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma.",
+          "source": "Pathology and staging report",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-05-no_prior_immunotherapy",
+          "patientId": "lumen-05",
+          "text": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment.",
+          "source": "Oncology treatment administration history",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-05-brain_imaging",
+          "patientId": "lumen-05",
+          "text": "Brain MRI shows no active brain metastases.",
+          "source": "Radiology \u00b7 Brain MRI",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-05-hemoglobin",
+          "patientId": "lumen-05",
+          "text": "Hemoglobin 12.4 g/dL.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "hemoglobin",
+            "value": 12.4,
+            "unit": "g/dL",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-05-platelets",
+          "patientId": "lumen-05",
+          "text": "Platelets 182 x10^9/L.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "platelets",
+            "value": 182,
+            "unit": "x10^9/L",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-05-performance",
+          "patientId": "lumen-05",
+          "text": "ECOG performance status is 1.",
+          "source": "Oncology clinic assessment",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        }
+      ],
+      "outsideRecords": [],
+      "proposedOutputs": [
+        {
+          "ruleId": "nsclc_met",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-05-nsclc_met",
+              "quote": "Pathology and staging review confirm stage IV non-small cell lung adenocarcinoma."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "no_prior_immunotherapy",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-05-no_prior_immunotherapy",
+              "quote": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "brain_imaging",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-05-brain_imaging",
+              "quote": "Brain MRI shows no active brain metastases."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "hemoglobin",
+          "status": "not_met",
+          "citations": [
+            {
+              "lineId": "lumen-02-hemoglobin",
+              "quote": "Hemoglobin 12.4 g/dL."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "platelets",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-05-platelets",
+              "quote": "Platelets 182 x10^9/L."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "performance",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-05-performance",
+              "quote": "ECOG performance status is 1."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "consent",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Confirm at the study visit."
+        }
+      ],
+      "scenario": "foreign citation requires review",
+      "expectedStatus": "needs_review",
+      "expectedPendingVisitRules": [
+        "consent"
+      ]
+    },
+    {
+      "id": "lumen-06",
+      "diagnosis": "metastatic colorectal adenocarcinoma",
+      "clinician": "Demo oncology team",
+      "nextVisitDays": 6,
+      "chart": [
+        {
+          "id": "lumen-06-nsclc_met",
+          "patientId": "lumen-06",
+          "text": "Pathology confirms metastatic colorectal adenocarcinoma. No lung primary; no NSCLC.",
+          "source": "Pathology and staging report",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-06-no_prior_immunotherapy",
+          "patientId": "lumen-06",
+          "text": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment.",
+          "source": "Oncology treatment administration history",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-06-brain_imaging",
+          "patientId": "lumen-06",
+          "text": "Brain MRI shows no active brain metastases.",
+          "source": "Radiology \u00b7 Brain MRI",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        },
+        {
+          "id": "lumen-06-hemoglobin",
+          "patientId": "lumen-06",
+          "text": "Hemoglobin 12.4 g/dL.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "hemoglobin",
+            "value": 12.4,
+            "unit": "g/dL",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-06-platelets",
+          "patientId": "lumen-06",
+          "text": "Platelets 182 x10^9/L.",
+          "source": "Hematology \u00b7 CBC",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": {
+            "analyte": "platelets",
+            "value": 182,
+            "unit": "x10^9/L",
+            "referenceUpper": null
+          }
+        },
+        {
+          "id": "lumen-06-performance",
+          "patientId": "lumen-06",
+          "text": "ECOG performance status is 1.",
+          "source": "Oncology clinic assessment",
+          "observedDays": -3,
+          "ingestedDays": -2,
+          "revision": 1,
+          "measurement": null
+        }
+      ],
+      "outsideRecords": [],
+      "proposedOutputs": [
+        {
+          "ruleId": "nsclc_met",
+          "status": "not_met",
+          "citations": [
+            {
+              "lineId": "lumen-06-nsclc_met",
+              "quote": "Pathology confirms metastatic colorectal adenocarcinoma. No lung primary; no NSCLC."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "no_prior_immunotherapy",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-06-no_prior_immunotherapy",
+              "quote": "Complete oncology treatment history reviewed: no prior PD-1 or PD-L1 inhibitor treatment."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "brain_imaging",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-06-brain_imaging",
+              "quote": "Brain MRI shows no active brain metastases."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "hemoglobin",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-06-hemoglobin",
+              "quote": "Hemoglobin 12.4 g/dL."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "platelets",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-06-platelets",
+              "quote": "Platelets 182 x10^9/L."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "performance",
+          "status": "met",
+          "citations": [
+            {
+              "lineId": "lumen-06-performance",
+              "quote": "ECOG performance status is 1."
+            }
+          ],
+          "explanation": "Compare the cited record with the study requirement."
+        },
+        {
+          "ruleId": "consent",
+          "status": "unknown",
+          "citations": [],
+          "explanation": "Confirm at the study visit."
+        }
+      ],
+      "scenario": "different primary cancer",
+      "expectedStatus": "ruled_out",
+      "expectedPendingVisitRules": [
+        "consent"
+      ]
+    }
+  ]
+}

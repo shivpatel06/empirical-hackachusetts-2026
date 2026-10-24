@@ -8,6 +8,8 @@ export const languages = [
 export const outreachStages = [
   "doctor_notified",
   "doctor_responded",
+  "doctor_agreed",
+  "patient_contacted",
   "discussed_at_visit",
   "patient_interested",
   "consent_visit_scheduled",
@@ -19,6 +21,8 @@ export const stageLabel: Record<string, string> = {
   drafts: "Preparing outreach",
   doctor_notified: "Physician note approved",
   doctor_responded: "Doctor responded",
+  doctor_agreed: "Doctor agreed",
+  patient_contacted: "Patient contact approved",
   discussed_at_visit: "Discussed at visit",
   patient_interested: "Patient interested",
   consent_visit_scheduled: "Consent visit scheduled",

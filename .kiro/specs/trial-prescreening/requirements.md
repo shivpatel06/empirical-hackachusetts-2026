@@ -2,6 +2,12 @@
 
 Status: Prepared by Codex from the user-supplied system design on October 24, 2026, and refined by Kiro for format and clarity. The design direction and product decisions originate from Codex; Kiro reformatted the document to the canonical spec template and folded in review clarifications. Phase 0 is implemented and verified as recorded in tasks.md; a seeded-trial approval, screening and evidence UI slice is implemented. Generalized clinical rules and the full gap/reply workflow remain pending. The original source-design.txt is preserved as historical context and retains the earlier Bedrock architecture.
 
+## Recorded-story alignment (October 24, 2026)
+
+The user explicitly requested that the application match the already-recorded script. The default sample is now the fictional **LUMEN-1** immunotherapy study for stage IV NSCLC. It has a separate authored protocol and cohort; it must never be represented as a ClinicalTrials.gov registration or silently replace the historical S1900J source. Walter is excluded on an exact cited prior pembrolizumab administration record. Elena has stale hemoglobin and brain MRI results, reviewed requests, appended replies and automatic re-screening.
+
+Patient contact remains simulated and requires this server-enforced sequence: coordinator verifies a current match → approves physician outreach → records explicit doctor agreement → separately approves the current patient-summary draft. A generic doctor response is insufficient. Decline, closed cases, changed chart/checklist versions and outdated draft revisions block contact. All tool activity, agreement and approvals remain auditable. This supersedes the earlier care-team-only handoff requirement for the current workflow; there is still no real messaging integration or automatic patient contact.
+
 ## Introduction
 
 Research coordinators at community oncology programs need to find potential candidates for trials their hospital has opened. This feature delivers a Trial Prescreening Agent that starts from a trial, screens an authorized synthetic cohort, gathers missing evidence through tools, and brings decisions and drafts to a coordinator for review. Patients benefit through potential access to research; enrollment gains and staff-time savings are hypotheses to evaluate, not claimed outcomes.
@@ -157,9 +163,9 @@ The supplied impact figures from source-design.txt (approximately 7.5 hours per 
 3. THE System SHALL write the patient summary in plain language targeting approximately a grade-six reading level, describing study participation, voluntary choice, and care-team questions.
 4. WHERE translations are provided, THE System SHALL offer English, Spanish, Portuguese, and Haitian Creole as planned options and SHALL mark generated translations as unvalidated drafts for care-team review.
 5. THE System SHALL simulate and visibly label all delivery.
-6. THE System SHALL hand patient summaries to the care team and SHALL NOT automatically send a patient summary to a patient.
+6. THE System SHALL keep patient contact locked until physician outreach is approved and explicit doctor agreement is recorded; a separate coordinator approval of the current patient-summary revision SHALL trigger simulated patient contact only.
 7. THE System SHALL require explicit coordinator approval for each external-facing simulated request or draft.
-8. THE System SHALL track the stages doctor notified, doctor responded, discussed at visit, patient interested or declined, consent visit scheduled, consented, formal screening, and enrolled or screen failed, with terminal reasons including doctor decline and trial closure.
+8. THE System SHALL track the stages doctor notified, doctor responded, doctor agreed, patient contact approved, discussed at visit, patient interested or declined, consent visit scheduled, consented, formal screening, and enrolled or screen failed, with terminal reasons including doctor decline and trial closure.
 9. THE System SHALL require human-entered outcomes and SHALL NOT infer outcomes from AI text.
 10. WHEN a physician has not replied after two business days, THE System SHALL create a reminder draft.
 11. WHEN the day before a patient visit is reached, THE System SHALL create a reminder draft.

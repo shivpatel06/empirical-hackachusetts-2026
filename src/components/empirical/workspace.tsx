@@ -487,7 +487,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
                       <h2>{view.trial?.title ?? "No trial selected"}</h2>
                       <p>{view.trial?.conditions.join(" · ")}</p>
                       <p>
-                        Registry: {view.trial?.recruitingStatus} · Local
+                        {view.trial?.id === "LUMEN-1" ? "Sample protocol" : `Registry: ${view.trial?.recruitingStatus}`} · Local
                         availability:{" "}
                         {view.trial?.localOpen
                           ? "confirmed at this program"
@@ -511,7 +511,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            ClinicalTrials.gov ↗
+                            {view.trial.id === "LUMEN-1" ? "Study protocol ↗" : "ClinicalTrials.gov ↗"}
                           </a>
                         )}
                       </div>
@@ -577,7 +577,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
       >
         <h2>Workspace details</h2>
         <p>
-          Fictional patient records and a public trial registry snapshot. Changes to
+          Fictional patient records with LUMEN-1 or an imported trial. Changes to
           trial criteria and screening are saved on the server.
         </p>
         <p>

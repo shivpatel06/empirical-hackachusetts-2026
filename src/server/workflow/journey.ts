@@ -215,6 +215,16 @@ export class JourneyStore {
             throw new WorkflowError(
               "Answer the question with a source instead.",
             );
+          if (action.decision === "approve" && ["physician", "summary", "reminder"].includes(item.kind)) {
+            const outreach = this.db.prepare("SELECT * FROM outreach_cases WHERE screening_id=?").get(item.screening_id) as Row | undefined;
+            if (!outreach || outreach.decision !== "verified" || terminal.includes(outreach.stage))
+              throw new WorkflowError("Outreach has closed or is not verified.");
+            if (item.kind === "summary") {
+              const physician = this.db.prepare("SELECT id FROM journey_items WHERE screening_id=? AND kind='physician' AND state='approved'").get(item.screening_id);
+              if (!physician || outreach.stage !== "doctor_agreed")
+                throw new WorkflowError("Record the doctor's agreement before approving patient contact.");
+            }
+          }
           this.db
             .prepare(
               "UPDATE journey_items SET state=?,approved_at=?,revision=revision+1 WHERE id=?",
@@ -228,7 +238,7 @@ export class JourneyStore {
             action.decision === "approve"
               ? "Simulated action approved"
               : "Draft declined",
-            `${item.patient_id}: ${item.kind}. ${item.kind === "summary" ? "Care-team handoff only; no direct patient contact." : "No external message sent."}`,
+            `${item.patient_id}: ${item.kind}. No external message sent.`,
           );
           if (action.decision === "approve" && item.kind === "physician")
             this.db
@@ -236,6 +246,11 @@ export class JourneyStore {
                 "UPDATE outreach_cases SET stage='doctor_notified',revision=revision+1,stage_at=?,updated_at=? WHERE screening_id=? AND stage='drafts'",
               )
               .run(this.now(), this.now(), item.screening_id);
+          if (action.decision === "approve" && item.kind === "summary") {
+            this.db.prepare("UPDATE outreach_cases SET stage='patient_contacted',revision=revision+1,stage_at=?,updated_at=? WHERE screening_id=? AND stage='doctor_agreed'")
+              .run(this.now(), this.now(), item.screening_id);
+            this.audit("Patient contact approved", `${item.patient_id}: doctor agreement recorded; coordinator approved summary revision ${item.revision}. Delivery simulated in this workspace.`);
+          }
         }
       } else if (action.action === "demo_reply") {
         const item = this.item(action.id, action.revision);
@@ -310,8 +325,9 @@ export class JourneyStore {
         const next = outreachStages[outreachStages.indexOf(c.stage) + 1];
         if (
           c.stage === "drafts" ||
-          action.stage === "doctor_notified" ||
+          ["doctor_notified", "patient_contacted"].includes(action.stage) ||
           (action.stage !== next &&
+            !(c.stage === "doctor_notified" && action.stage === "doctor_agreed") &&
             ![
               "patient_declined",
               "doctor_declined",

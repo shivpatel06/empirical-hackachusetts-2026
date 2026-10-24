@@ -46,7 +46,7 @@ export const patientSchema = z
   });
 export const trialInputSchema = z
   .object({
-    id: z.string().regex(/^NCT\d{8}$/),
+    id: z.string().regex(/^(NCT\d{8}|LUMEN-1)$/),
     title: z.string(),
     criteriaText: z.string().min(1),
     sourceUrl: z.url(),

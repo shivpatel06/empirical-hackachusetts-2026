@@ -12,7 +12,7 @@ Empirical helps research teams identify patients who may qualify for clinical tr
 - Screens a patient cohort and separates potential matches, exclusions, missing information, and cases needing review.
 - Shows the chart excerpts and dates behind each finding.
 - Investigates gaps, drafts records requests, and re-screens when new records arrive.
-- Prepares physician notes and multilingual patient-summary drafts for care-team review, with approval and follow-up history.
+- Prepares physician notes and multilingual patient summaries. Patient contact requires recorded doctor agreement and separate coordinator approval.
 
 The hackathon prototype uses fictional patient records and simulated communications. Prescreening supports clinical review; it does not determine final eligibility.
 

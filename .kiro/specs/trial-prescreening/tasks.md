@@ -301,3 +301,9 @@ Start with 0.1–0.4 and Phase 1, then prove the Phase 2 workflow before polishi
 - 105 tests pass; production build and TypeScript pass. SDK outreach tests invoke the actual SDK runner with a deterministic model and reject foreign citations. These are not live Luna-quality results.
 - Tasks 2.2, 2.3, 3.1 and 3.2 are checked for their implemented synthetic-demo gates. Full live agentic rehearsal (2.4/4.2), arbitrary changed-criteria live screening, unattended nightly scheduling, clinical/translation validation and deployment remain pending. Earlier provider verification found exhausted API credits; no paid requests were made in this checkpoint.
 - Setup and the rehearsal sequence are documented in `docs/demo-journey.md`. Attribution: this implementation and verification were performed by Codex; no additional Kiro implementation or native-hook benefit is claimed.
+
+## LUMEN-1 workflow checkpoint (October 24, 2026, Codex)
+
+- Added a separate fictional LUMEN-1 stage IV lung cancer immunotherapy protocol and six patient cases. Walter's prior pembrolizumab record supports exclusion; Elena's outdated hemoglobin and brain imaging remain unknown until approved requests receive current records and trigger re-screening. Historical S1900J data is preserved.
+- Patient contact requires an approved physician note, an explicit human-recorded doctor agreement, and separate coordinator approval of the current patient-summary draft. Generic responses, stale drafts, duplicate approvals and closed cases cannot bypass this sequence; actions retain actor-attributed audit history. Delivery remains simulated.
+- 114 tests and the production build pass. Browser verification exercised Walter's cited exclusion and Elena's investigation, two approved requests, received records, automatic re-screen, Spanish outreach draft, physician approval, doctor agreement and separate patient-contact approval. No live API calls, external delivery or additional Kiro execution claimed.

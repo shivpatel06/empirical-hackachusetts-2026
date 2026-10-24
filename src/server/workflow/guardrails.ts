@@ -8,6 +8,7 @@ import {
 } from "../../lib/schemas/ai";
 import type { CheckedRule, ScreeningResult } from "../../lib/workflow";
 import { demoChecklist, demoTrial } from "../ai/fixtures";
+import { lumenChecklist, lumenTrial, priorImmunotherapyEvidence } from "../ai/lumen-fixture";
 import { checkAtomicRule } from "./atomic";
 
 const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
@@ -48,6 +49,7 @@ export function checkScreening(
   )
     throw new Error("Approved nonempty checklist and valid clock required");
   validateDraft({ rules: checklist.rules });
+  const sampleChecklist = checklist.trialId === lumenTrial.id ? lumenChecklist : demoChecklist;
   const parsed = raw.map((value) => ruleOutputSchema.safeParse(value));
   const unknownOutput = parsed.some(
     (p) => !p.success || !checklist.rules.some((r) => r.id === p.data.ruleId),
@@ -141,14 +143,26 @@ export function checkScreening(
         proposal!.status === "not_met",
       );
     // Scope the demo policy to an unchanged, hand-authored rule, not a model-created predicate.
-    const canonical = demoChecklist.rules.find((r) => r.id === rule.id);
+    const canonical = sampleChecklist.rules.find((r) => r.id === rule.id);
     const knownRule =
-      checklist.trialId === demoTrial.id && isDeepStrictEqual(rule, canonical);
+      [demoTrial.id, lumenTrial.id].includes(checklist.trialId) && isDeepStrictEqual(rule, canonical);
     if (!knownRule)
       return uncertain(
         "This rule needs a reviewed evidence policy before automated classification.",
         true,
       );
+    // Only the authored LUMEN study has this exact treatment-history policy.
+    // Unknown prose and incomplete medication lists never establish a negative history.
+    if (mode === "fixture" && checklist.trialId === lumenTrial.id && rule.id === "no_prior_immunotherapy") {
+      const negative = (line: ChartLine) => normalize(line.text) === normalize(priorImmunotherapyEvidence);
+      const positive = (line: ChartLine) => normalize(line.text) === normalize(canonical!.evidenceDescription);
+      const evidence = patient.chart.filter((line) => line.patientId === patient.id && line.revision <= patient.revision && current(line));
+      if (evidence.some(negative) && evidence.some(positive)) return uncertain("Treatment history conflicts; coordinator review is required.", true);
+      if (cited.every(negative) && proposal!.citations.every((citation) => normalize(citation.quote) === normalize(priorImmunotherapyEvidence))) {
+        return { ...base, status: "not_met", support: "synthetic_assertion",
+          reason: "Documented prior pembrolizumab treatment does not meet LUMEN-1's no-prior-immunotherapy requirement." };
+      }
+    }
     if (rule.numeric) {
       const numeric = rule.numeric;
       const measure = (line: ChartLine): boolean | null => {
@@ -244,7 +258,8 @@ export function checkScreening(
     patient.chart.some(
       (line) =>
         !line.measurement &&
-        !demoChecklist.rules.some(
+        !(checklist.trialId === lumenTrial.id && normalize(line.text) === normalize(priorImmunotherapyEvidence)) &&
+        !sampleChecklist.rules.some(
           (rule) =>
             normalize(rule.evidenceDescription) === normalize(line.text),
         ),
@@ -287,9 +302,9 @@ export function prefilter(
     checklist.state !== "approved" ||
     !isDeepStrictEqual(
       checklist.rules.find((r) => r.id === "nsclc_met"),
-      demoChecklist.rules.find((r) => r.id === "nsclc_met"),
+      (checklist.trialId === lumenTrial.id ? lumenChecklist : demoChecklist).rules.find((r) => r.id === "nsclc_met"),
     ) ||
-    checklist.trialId !== demoTrial.id ||
+    ![demoTrial.id, lumenTrial.id].includes(checklist.trialId) ||
     patient.diagnosis !== "metastatic colorectal adenocarcinoma"
   )
     return null;

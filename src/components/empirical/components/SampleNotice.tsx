@@ -5,8 +5,7 @@ export function SampleNotice() {
     <details className="sample-notice">
       <summary>Sample workspace</summary>
       <p>
-        These patients, clinicians and records are fictional. Trial information
-        comes from ClinicalTrials.gov. Requests, replies and handoffs stay inside
+        These patients, clinicians and records are fictional. LUMEN-1 is a fictional study; imported trial information comes from ClinicalTrials.gov. Requests, replies and handoffs stay inside
         this workspace; no messages are delivered. Sample runs use prepared
         responses without AI calls. Live AI runs are labeled separately.
         Prescreening and translations require clinical review.

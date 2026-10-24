@@ -15,6 +15,7 @@ import {
   demoTrial,
   DEMO_TIME,
 } from "./fixtures";
+import { buildLumenCohort, lumenChecklist, lumenTrial } from "./lumen-fixture";
 import { GapSession } from "./gap-tools";
 import { patientName, clinicianName } from "../../lib/sample-profiles";
 
@@ -24,6 +25,7 @@ export class FixtureAdapter implements AiAdapter {
   readonly label = "Fixture simulation · no AI call";
   constructor(private readonly clock: () => Date = () => new Date(DEMO_TIME)) {}
   async extract(trial: TrialInput) {
+    if (trial.id === lumenTrial.id && trial.criteriaText === lumenTrial.criteriaText) return structuredClone(lumenChecklist);
     if (
       trial.id !== demoTrial.id ||
       trial.criteriaText !== demoTrial.criteriaText
@@ -37,21 +39,24 @@ export class FixtureAdapter implements AiAdapter {
   async screen(input: Patient, approved: ChecklistInput) {
     const patient = patientSchema.parse(input);
     const checklist = checklistInputSchema.parse(approved);
-    const fixture = buildDemoCohort(this.clock).find(
+    const isLumen = checklist.trialId === lumenTrial.id;
+    const expectedTrial = isLumen ? lumenTrial : demoTrial;
+    const expectedChecklist = isLumen ? lumenChecklist : demoChecklist;
+    const fixture = (isLumen ? buildLumenCohort(this.clock) : buildDemoCohort(this.clock)).find(
       (item) => item.patient.id === patient.id,
     );
     const replyProposals = fixtureWithReplies(patient);
     if (
       replyProposals &&
-      checklist.trialId === demoTrial.id &&
-      isDeepStrictEqual(checklist.rules, demoChecklist.rules)
+      checklist.trialId === expectedTrial.id &&
+      isDeepStrictEqual(checklist.rules, expectedChecklist.rules)
     )
       return replyProposals;
     if (
       !fixture ||
       !isDeepStrictEqual(patient, fixture.patient) ||
-      checklist.trialId !== demoTrial.id ||
-      !isDeepStrictEqual(checklist.rules, demoChecklist.rules)
+      checklist.trialId !== expectedTrial.id ||
+      !isDeepStrictEqual(checklist.rules, expectedChecklist.rules)
     ) {
       throw new Error(
         "No exact screening fixture for these inputs. Edited charts/checklists require live screening.",

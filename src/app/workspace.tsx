@@ -15,7 +15,7 @@ const labels = {
   ruled_out: "Ruled out",
 };
 const ruleNames: Record<string, string> = {
-  nsclc_met: "NSCLC & MET amplification",
+  nsclc_met: "NSCLC diagnosis",
   cns_stable: "CNS disease stability",
   no_met_tki: "Prior MET therapy",
   ici_washout: "Immunotherapy washout",
@@ -407,7 +407,7 @@ export function Workspace({
                   <div className="trial-tags">
                     <span className="mono">{trial.id}</span>
                     <span className="registry-status">
-                      Registry: {trial.recruitingStatus.toLowerCase()}
+                      {trial.id === "LUMEN-1" ? "Sample protocol" : `Registry: ${trial.recruitingStatus.toLowerCase()}`}
                     </span>
                   </div>
                   <h2>
@@ -422,7 +422,7 @@ export function Workspace({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    View ClinicalTrials.gov record ↗
+                    {trial.id === "LUMEN-1" ? "View sample study protocol ↗" : "View ClinicalTrials.gov record ↗"}
                   </a>
                 </div>
                 <div className="trial-facts">
@@ -437,13 +437,13 @@ export function Workspace({
                     </small>
                   </div>
                   <div>
-                    <span>SNAPSHOT RETRIEVED</span>
+                    <span>{trial.id === "LUMEN-1" ? "PROTOCOL LOADED" : "SNAPSHOT RETRIEVED"}</span>
                     <strong>
                       {date(trial.fetchedAt)},{" "}
                       {new Date(trial.fetchedAt).getUTCFullYear()}
                     </strong>
                     <small>
-                      Registry updated {trial.updatedAt ?? "Not reported"}
+                      {trial.id === "LUMEN-1" ? "Protocol dated" : "Registry updated"} {trial.updatedAt ?? "Not reported"}
                     </small>
                     <small>Local availability requires confirmation</small>
                   </div>
@@ -504,7 +504,7 @@ export function Workspace({
                       </button>
                     )}
                   </div>
-                  {!edit && (
+                  {!edit && trial.id !== "LUMEN-1" && (
                     <div className="extraction-upgrade">
                       <p>
                         Re-extract the complete registry criteria with Live AI

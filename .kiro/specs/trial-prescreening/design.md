@@ -2,6 +2,14 @@
 
 Status: Implementation design authored by Codex and refined by Kiro for format and clarity. The architecture and product decisions originate from Codex; Kiro reformatted this document to the canonical Kiro design template and folded in review reconciliations. requirements.md defines the authoritative acceptance criteria and glossary. The original source-design.txt is preserved as historical context only; its earlier Bedrock/Claude four-agent architecture is superseded by the OpenAI + Next.js design described here and must not be reintroduced. Source wording such as "Built today" and day-in-the-life counts describes intended behavior, not completed work or measured timings.
 
+## Recorded-story update (October 24, 2026, Codex)
+
+The current sample study is LUMEN-1, a fictional stage IV lung-cancer immunotherapy protocol in `fixtures/trial-prescreening/lumen-1.json`. It has its own study ID, source link, checklist and `lumen-*` patient IDs. Setup adds it without rewriting historical S1900J charts, approvals or source snapshots. Screening queues and patient views isolate each sample cohort. Registry validation continues to accept only real NCT-shaped IDs.
+
+The existing scoped AI adapter also supports exact LUMEN fixture replay. Its reviewed evidence policy can reject the no-prior-immunotherapy rule only on the complete authored pembrolizumab record; partial, conflicting, missing and future-dated evidence require review. This remains an authored prototype policy, not generalized clinical inference.
+
+The outreach state machine adds `doctor_agreed` and `patient_contacted`. The latter can only be reached by approval of a current summary after an approved physician note and recorded agreement, within a transaction. A manually submitted patient-contact outcome cannot bypass this check. A generic `doctor_responded` event does not unlock contact. The UI displays the lock and records explicit agreement with a source note. All delivery remains simulated.
+
 ## Overview
 
 The Trial Prescreening Agent is a single Next.js/TypeScript application for a synthetic demo. A research coordinator at a community oncology program starts from a trial, approves its extracted screening rules, screens an authorized synthetic cohort, lets a bounded tool loop gather missing evidence, and reviews decisions and drafts in a typed inbox. AI reads evidence and proposes per-rule findings; deterministic code decides aggregate status and enforces every approval boundary. All patient data is synthetic and every outbound action is a clearly labeled simulated send.

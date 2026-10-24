@@ -16,6 +16,7 @@ import type {
 import type { AiAdapter } from "../ai/contracts";
 import { safeAiError } from "../ai/contracts";
 import { demoChecklist, demoTrial, DEMO_TIME } from "../ai/fixtures";
+import { lumenTrial, lumenChecklist, lumenStudy } from "../ai/lumen-fixture";
 import demoSnapshot from "../../../fixtures/trial-prescreening/NCT06116682.json";
 import { registryTrial, type RegistryTrial } from "../trials/registry";
 import { checkScreening, prefilter } from "./guardrails";
@@ -97,6 +98,10 @@ export class WorkflowStore {
       .prepare("SELECT snapshot_json FROM trials WHERE id=?")
       .get(trial.id) as Row | undefined;
     if (!row) return false;
+    if (trial.id === lumenTrial.id) {
+      const saved = JSON.parse(row.snapshot_json);
+      return JSON.stringify(saved.trial) === JSON.stringify((trial.snapshot as { trial: unknown }).trial);
+    }
     return (
       registryTrial(JSON.parse(row.snapshot_json), trial.id, trial.fetchedAt)
         .contentHash === trial.contentHash
@@ -211,14 +216,15 @@ export class WorkflowStore {
       throw new WorkflowError(
         "Wait for current work to finish before preparing the walkthrough.",
       );
-    const trial = registryTrial(
+    const isLumen = this.activeTrialId() === lumenTrial.id;
+    const trial = isLumen ? lumenStudy(this.clock().toISOString()) : registryTrial(
       demoSnapshot,
       demoTrial.id,
       this.clock().toISOString(),
     );
     this.persistImport(
       trial,
-      demoChecklist,
+      isLumen ? lumenChecklist : demoChecklist,
       "fixture",
       this.importRevision(trial.id),
       true,
@@ -287,6 +293,12 @@ export class WorkflowStore {
         .map((l) => JSON.parse(l.payload_json)),
     });
   }
+  private cohort(trialId: string) {
+    const patients = this.db.prepare("SELECT id,revision FROM patients ORDER BY next_visit,id").all() as Row[];
+    if (trialId === lumenTrial.id) return patients.filter((p) => p.id.startsWith("lumen-"));
+    if (trialId === demoTrial.id) return patients.filter((p) => !p.id.startsWith("lumen-"));
+    return patients;
+  }
   private queue(checklist: StoredChecklist, patientId?: string) {
     if (checklist.state !== "approved")
       throw new WorkflowError(
@@ -311,9 +323,7 @@ export class WorkflowStore {
         "Registry status does not permit new screening. Review trial availability.",
       );
     let count = 0;
-    for (const p of this.db
-      .prepare("SELECT id,revision FROM patients")
-      .all() as Row[]) {
+    for (const p of this.cohort(checklist.trialId)) {
       if (patientId && p.id !== patientId) continue;
       const payload: Payload = {
         patientId: p.id,
@@ -504,11 +514,7 @@ export class WorkflowStore {
     const t = this.db
       .prepare("SELECT * FROM trials WHERE id=?")
       .get(this.activeTrialId() ?? "") as Row | undefined;
-    const patients = (
-      this.db
-        .prepare("SELECT id FROM patients ORDER BY next_visit,id")
-        .all() as Row[]
-    ).map((p) => {
+    const patients = this.cohort(t?.id ?? "").map((p) => {
       const patient = this.patient(p.id);
       const s = this.db
         .prepare(

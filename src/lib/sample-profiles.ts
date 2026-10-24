@@ -9,9 +9,9 @@ const profiles: Record<string, { name: string; clinician: string }> = {
 };
 
 export const patientName = (id: string) =>
-  profiles[id]?.name ?? `Patient ${id.split("-").at(-1)}`;
+  profiles[id.replace(/^lumen-/, "synthetic-")]?.name ?? `Patient ${id.split("-").at(-1)}`;
 export const clinicianName = (id: string, original: string) =>
-  original === "Demo oncology team" ? profiles[id]?.clinician ?? original : original;
+  original === "Demo oncology team" ? profiles[id.replace(/^lumen-/, "synthetic-")]?.clinician ?? original : original;
 
 const documents: Record<string, string> = {
   assignment: "Research enrollment worksheet",

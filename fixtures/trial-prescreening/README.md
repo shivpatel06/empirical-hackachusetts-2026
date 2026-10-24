@@ -1,4 +1,17 @@
-# Synthetic trial-prescreening fixtures
+# Sample studies and records
+
+The default workspace uses **LUMEN-1**, a fictional immunotherapy study for stage IV non-small cell lung cancer. `lumen-1.json` contains its protocol, seven checklist rules and six patient cases. It is authored for the recorded product walkthrough, not a registered trial or clinical guidance.
+
+- Marcus Bell: supported potential match, with formal eligibility and consent still pending.
+- Walter Hughes: prior pembrolizumab treatment excludes him under this sample protocol; his hemoglobin meets the threshold.
+- Elena Rivera: hemoglobin and brain MRI are too old. Approved records requests and authored replies trigger re-screening.
+- Daniel Kim: complete treatment history is missing.
+- Grace Okafor: a foreign citation requires review.
+- Robert Chen: documented colorectal cancer is outside the study scope.
+
+`npm run setup` adds LUMEN-1 and its separate `lumen-*` cohort without rewriting any existing records or approvals. On first installation it selects LUMEN-1; rerunning setup preserves its state. Physician outreach, doctor agreement and patient contact are separate reviewed steps; communications stay inside the workspace.
+
+## Historical registry fixture
 
 Public trial: [NCT06116682 / S1900J](https://clinicaltrials.gov/study/NCT06116682), an expanded Lung-MAP treatment trial for advanced NSCLC with MET amplification. The saved registry response lists Massachusetts sites. This does **not** establish that a coordinator's hospital has opened the trial; local-open confirmation is still required and is false in the provenance record.
 

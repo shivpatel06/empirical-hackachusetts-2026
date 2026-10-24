@@ -48,7 +48,7 @@ export function EvidenceWorkspace({
           ? "Not met"
           : status === "pending"
             ? "Verify at visit"
-            : "Missing evidence";
+            : "Unknown";
   return (
     <div className="cw">
       <header className="cw-header">
@@ -73,7 +73,7 @@ export function EvidenceWorkspace({
                 ? "Not screened"
                 : screening.mode === "live"
                   ? "Live AI proposals"
-                  : "Sample screening"}
+                  : null}
             </span>
           </div>
           <p className="integration-result">
@@ -226,7 +226,7 @@ export function EvidenceWorkspace({
               <h3>Coordinator review</h3>
               <p className="cw-hint">
                 Inspect the source, date and outstanding checks. Match
-                verification and record-request actions are not connected yet.
+                verification and records requests are available in the patient journey above.
               </p>
               <a className="btn" href="/criteria">
                 Open trial checklist

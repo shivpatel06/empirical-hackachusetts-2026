@@ -16,7 +16,7 @@ const itemLabels = {
   request: "Records request",
   question: "Coordinator question",
   physician: "Note to the doctor",
-  summary: "Patient summary for the care team",
+  summary: "Patient contact",
   reminder: "Follow-up reminder",
 };
 
@@ -203,6 +203,9 @@ export function PatientJourney({
               busy={busy || !view.demoMode}
               act={act}
               assessmentAt={view.assessmentAt}
+              approvalBlocked={item.kind === "summary" && review?.stage !== "doctor_agreed"
+                ? "Patient contact is locked until the doctor agrees. Record the doctor's decision below."
+                : undefined}
             />
           ))}
           {canReview && !active && (
@@ -480,11 +483,13 @@ function ReviewItem({
   busy,
   act,
   assessmentAt,
+  approvalBlocked,
 }: {
   item: JourneyItem;
   busy: boolean;
   act: Act;
   assessmentAt: string;
+  approvalBlocked?: string;
 }) {
   const [body, setBody] = useState(item.body),
     [editing, setEditing] = useState(false),
@@ -496,7 +501,7 @@ function ReviewItem({
       item.kind === "question" ||
       (item.kind === "request" && item.state === "approved");
   const demo =
-    item.patientId === "synthetic-03" &&
+    ["synthetic-03", "lumen-03"].includes(item.patientId) &&
     ["hemoglobin", "brain_imaging"].includes(item.ruleId ?? "");
   return (
     <section className="card journey-panel">
@@ -522,6 +527,7 @@ function ReviewItem({
       ) : (
         <p className="journey-draft">{item.body}</p>
       )}
+      {approvalBlocked && <p className="journey-caption" role="status">{approvalBlocked}</p>}
       {pending && item.kind !== "question" && (
         <div className="journey-actions">
           {editing ? (
@@ -552,7 +558,7 @@ function ReviewItem({
             <>
               <button
                 className="btn btn--primary"
-                disabled={busy}
+                disabled={busy || !!approvalBlocked}
                 onClick={() =>
                   act(
                     {
@@ -562,13 +568,13 @@ function ReviewItem({
                       decision: "approve",
                     },
                     item.kind === "summary"
-                      ? "Care-team handoff approved."
+                      ? "Patient contact approved. Delivery simulated in this workspace."
                       : "Approval saved in this workspace.",
                   )
                 }
               >
                 {item.kind === "summary"
-                  ? "Approve care-team handoff"
+                  ? "Approve patient contact"
                   : item.kind === "physician" ? "Approve physician note" : item.kind === "reminder" ? "Approve reminder" : "Approve request"}
               </button>
               <button
@@ -720,16 +726,19 @@ function FollowUp({
         Outcomes are recorded by a person. The agent does not infer consent or
         enrollment.
       </p>
+      {review.stage === "doctor_agreed" && <p>Doctor agreement is recorded. Review the patient summary and approve patient contact above.</p>}
       {review.stage !== "drafts" && !terminal && (
         <>
           <label>
             Observed outcome
             <select
               className="select"
-              value={choice || next}
+              value={choice || (next === "patient_contacted" ? "" : next)}
               onChange={(e) => setChoice(e.target.value)}
             >
-              {next && <option value={next}>{stageLabel[next]}</option>}
+              {next === "patient_contacted" && <option value="" disabled>Select a closing outcome, if applicable</option>}
+              {next && next !== "patient_contacted" && <option value={next}>{stageLabel[next]}</option>}
+              {review.stage === "doctor_notified" && <option value="doctor_agreed">Doctor agreed</option>}
               {[
                 "patient_declined",
                 "doctor_declined",
@@ -754,14 +763,14 @@ function FollowUp({
           </label>
           <button
             className="btn"
-            disabled={busy || note.trim().length < 3}
+            disabled={busy || note.trim().length < 3 || (next === "patient_contacted" && !choice)}
             onClick={async () => {
               await act(
                 {
                   action: "outcome",
                   screeningId: review.screeningId,
                   revision: review.revision,
-                  stage: choice || next,
+                  stage: choice || (next === "patient_contacted" ? "" : next),
                   note,
                 },
                 "Human-entered outcome saved.",
