@@ -5,6 +5,7 @@ describe("parseServerEnv", () => {
   it("applies defaults when variables are absent", () => {
     const env = parseServerEnv({});
     expect(env).toEqual({
+      AI_MODE: "fixture",
       OPENAI_API_KEY: undefined,
       DATABASE_PATH: "./data/app.db",
       DEMO_MODE: true,

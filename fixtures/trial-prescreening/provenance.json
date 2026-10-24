@@ -1,0 +1,12 @@
+{
+  "trialId": "NCT06116682",
+  "sourceUrl": "https://clinicaltrials.gov/study/NCT06116682",
+  "apiUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06116682",
+  "fetchedAt": "2026-10-24T20:51:54.490077+00:00",
+  "snapshotSha256": "8e9615692fad46fb592c7377df04e9b1710533a9e715377360b65d1839208764",
+  "criteriaSha256": "1b7e5426644e29023ba8370d233793d68762e23a641a24982ffff238672ecc30",
+  "registryStatus": "RECRUITING",
+  "registryUpdatedAt": "2026-10-09",
+  "syntheticLocalOpenConfirmation": false,
+  "note": "Public snapshot only. Listed Massachusetts sites are not proof a hospital has opened this trial locally. Coordinator confirmation is still required. Patient records and expected findings are hand-authored synthetic fixtures by Codex; not Synthea output or clinical validation."
+}

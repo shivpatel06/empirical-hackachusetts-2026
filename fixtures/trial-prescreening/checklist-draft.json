@@ -1,0 +1,976 @@
+{
+  "rules": [
+    {
+      "id": "assignment",
+      "sourceQuote": "Participants must have been assigned to S1900J by the Southwest Oncology Group (SWOG) Statistics and Data Management Center (SDMC). Assignment to S1900J is determined by the LUNGMAP protocol",
+      "qualification": "Participants must have been assigned to S1900J by the Southwest Oncology Group (SWOG) Statistics and Data Management Center (SDMC). Assignment to S1900J is determined by the LUNGMAP protocol",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Synthetic SWOG assignment record: assigned to S1900J through LUNGMAP.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have been assigned to S1900J by the Southwest Oncology Group (SWOG) Statistics and Data Management Center (SDMC). Assignment to S1900J is determined by the LUNGMAP protocol"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "nsclc_met",
+      "sourceQuote": "Participants must have documentation of NSCLC with MET amplification determined by FMI tissue-based next generation sequencing (NGS) assay",
+      "qualification": "Participants must have documentation of NSCLC with MET amplification determined by FMI tissue-based next generation sequencing (NGS) assay",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Pathology confirms recurrent metastatic non-small cell lung adenocarcinoma. FMI tissue NGS confirms MET amplification.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have documentation of NSCLC with MET amplification determined by FMI tissue-based next generation sequencing (NGS) assay"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "measurable",
+      "sourceQuote": "Participants must have measurable disease documented by CT or MRI. The CT from a combined positron emission tomography (PET)/CT may be used to document measurable disease ONLY if it is of diagnostic quality: otherwise, it may be used to document non-measurable disease only. Measurable disease must be assessed within 28 days prior to sub-study registration. Pleural effusions, ascites and laboratory parameters are not acceptable as the only evidence of disease. Non-measurable disease must be assessed within 42 days prior to sub-study registration. All known sites of disease must be assessed and documented on the Baseline Tumor Assessment Form. Participants whose only measurable disease is within a previous radiation therapy port must demonstrate clearly progressive disease (in the opinion of the treating investigator) prior to sub-study registration to be considered measurable",
+      "qualification": "Participants must have measurable disease documented by CT or MRI. The CT from a combined positron emission tomography (PET)/CT may be used to document measurable disease ONLY if it is of diagnostic quality: otherwise, it may be used to document non-measurable disease only. Measurable disease must be assessed within 28 days prior to sub-study registration. Pleural effusions, ascites and laboratory parameters are not acceptable as the only evidence of disease. Non-measurable disease must be assessed within 42 days prior to sub-study registration. All known sites of disease must be assessed and documented on the Baseline Tumor Assessment Form. Participants whose only measurable disease is within a previous radiation therapy port must demonstrate clearly progressive disease (in the opinion of the treating investigator) prior to sub-study registration to be considered measurable",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Diagnostic CT documents a measurable 3.2 cm lung lesion outside all previous radiation ports. All known disease sites are documented on the Baseline Tumor Assessment Form; no additional non-measurable lesions.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have measurable disease documented by CT or MRI. The CT from a combined positron emission tomography (PET)/CT may be used to document measurable disease ONLY if it is of diagnostic quality: otherwise, it may be used to document non-measurable disease only. Measurable disease must be assessed within 28 days prior to sub-study registration. Pleural effusions, ascites and laboratory parameters are not acceptable as the only evidence of disease. Non-measurable disease must be assessed within 42 days prior to sub-study registration. All known sites of disease must be assessed and documented on the Baseline Tumor Assessment Form. Participants whose only measurable disease is within a previous radiation therapy port must demonstrate clearly progressive disease (in the opinion of the treating investigator) prior to sub-study registration to be considered measurable"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "brain_imaging",
+      "sourceQuote": "Participants must have a CT or MRI scan of the brain to evaluate for central nervous system (CNS) disease within 42 days prior to sub-study registration",
+      "qualification": "Participants must have a CT or MRI scan of the brain to evaluate for central nervous system (CNS) disease within 42 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Screening brain MRI: no brain metastases or leptomeningeal disease.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have a CT or MRI scan of the brain to evaluate for central nervous system (CNS) disease within 42 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 42,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "cns_stable",
+      "sourceQuote": "Participants with asymptomatic CNS metastasis (brain metastases or leptomeningeal disease) must be clinically stable and asymptomatic for at least 14 days prior to sub-study registration\n\n  * NOTE: Participants can be on a low-dose corticosteroid treatment (\u2264 10 mg prednisone or equivalent) for at least 14 days prior to study treatment",
+      "qualification": "Participants with asymptomatic CNS metastasis (brain metastases or leptomeningeal disease) must be clinically stable and asymptomatic for at least 14 days prior to sub-study registration\n\n  * NOTE: Participants can be on a low-dose corticosteroid treatment (\u2264 10 mg prednisone or equivalent) for at least 14 days prior to study treatment",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "No CNS metastases. Neurologically asymptomatic; no systemic corticosteroids.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants with asymptomatic CNS metastasis (brain metastases or leptomeningeal disease) must be clinically stable and asymptomatic for at least 14 days prior to sub-study registration\n\n  * NOTE: Participants can be on a low-dose corticosteroid treatment (\u2264 10 mg prednisone or equivalent) for at least 14 days prior to study treatment"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "other_drivers",
+      "sourceQuote": "Participants must not have other known actionable oncogenic alterations, such as (but not limited to) EGFR sensitizing mutations, EGFR T790M mutation, MET Exon-14 skipping mutant NSCLC, ALK gene fusion, ROS1 gene rearrangement, RET gene rearrangement, NTRK rearrangement, HER2 mutation, KRAS activating mutations, and BRAF V600E mutation",
+      "qualification": "Participants must not have other known actionable oncogenic alterations, such as (but not limited to) EGFR sensitizing mutations, EGFR T790M mutation, MET Exon-14 skipping mutant NSCLC, ALK gene fusion, ROS1 gene rearrangement, RET gene rearrangement, NTRK rearrangement, HER2 mutation, KRAS activating mutations, and BRAF V600E mutation",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "FMI tissue NGS: no other actionable oncogenic alterations, including EGFR sensitizing/T790M, MET exon-14 skipping, ALK, ROS1, RET, NTRK, HER2, KRAS and BRAF V600E.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have other known actionable oncogenic alterations, such as (but not limited to) EGFR sensitizing mutations, EGFR T790M mutation, MET Exon-14 skipping mutant NSCLC, ALK gene fusion, ROS1 gene rearrangement, RET gene rearrangement, NTRK rearrangement, HER2 mutation, KRAS activating mutations, and BRAF V600E mutation"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "progression",
+      "sourceQuote": "Participants must have progressed (in the opinion of the treating physician) following the most recent line of therapy",
+      "qualification": "Participants must have progressed (in the opinion of the treating physician) following the most recent line of therapy",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Treating oncologist documents radiographic progression after the most recent systemic line.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have progressed (in the opinion of the treating physician) following the most recent line of therapy"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "prior_systemic",
+      "sourceQuote": "Participants must have received at least one line of systemic treatment for Stage IV or recurrent NSCLC",
+      "qualification": "Participants must have received at least one line of systemic treatment for Stage IV or recurrent NSCLC",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete reconciled treatment history: one prior line of carboplatin, pemetrexed and pembrolizumab for metastatic NSCLC; final dose 70 days before the demo registration date. No other systemic cancer therapy ever received.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have received at least one line of systemic treatment for Stage IV or recurrent NSCLC"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "recovered",
+      "sourceQuote": "Participants must have recovered (\u2264 Grade 1) from any side effects of prior therapy. The exception is if a side effect from a prior treatment is known to be permanent without expected further recovery or resolution (i.e., endocrinopathy from immunotherapy or cisplatin neurotoxicity)",
+      "qualification": "Participants must have recovered (\u2264 Grade 1) from any side effects of prior therapy. The exception is if a side effect from a prior treatment is known to be permanent without expected further recovery or resolution (i.e., endocrinopathy from immunotherapy or cisplatin neurotoxicity)",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "All prior treatment toxicities resolved to grade 0. No ongoing adverse effects.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have recovered (\u2264 Grade 1) from any side effects of prior therapy. The exception is if a side effect from a prior treatment is known to be permanent without expected further recovery or resolution (i.e., endocrinopathy from immunotherapy or cisplatin neurotoxicity)"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "no_met_tki",
+      "sourceQuote": "Participants must not have been previously treated for any cancer with MET tyrosine kinase inhibitors (TKIs) such as tepotinib, capmatinib, and crizotinib",
+      "qualification": "Participants must not have been previously treated for any cancer with MET tyrosine kinase inhibitors (TKIs) such as tepotinib, capmatinib, and crizotinib",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete reconciled oncology history: never received any MET tyrosine kinase inhibitor, including tepotinib, capmatinib or crizotinib, for any cancer.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have been previously treated for any cancer with MET tyrosine kinase inhibitors (TKIs) such as tepotinib, capmatinib, and crizotinib"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "systemic_washout",
+      "sourceQuote": "Participants must not have received any prior systemic therapy (systemic chemotherapy, immunotherapy or investigational drug) within 21 days prior to sub-study registration",
+      "qualification": "Participants must not have received any prior systemic therapy (systemic chemotherapy, immunotherapy or investigational drug) within 21 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete reconciled treatment administration history: last systemic cancer treatment 70 days before demo registration; no treatment since.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have received any prior systemic therapy (systemic chemotherapy, immunotherapy or investigational drug) within 21 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "ici_washout",
+      "sourceQuote": "Participants must not have a prior treatment with anti-PD-1 or anti-PD-L1 antibody within 6 weeks of sub-study registration",
+      "qualification": "Participants must not have a prior treatment with anti-PD-1 or anti-PD-L1 antibody within 6 weeks of sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete reconciled treatment administration history: last pembrolizumab 70 days before demo registration; no other anti-PD-1 or anti-PD-L1 therapy since.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have a prior treatment with anti-PD-1 or anti-PD-L1 antibody within 6 weeks of sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "radiation_washout",
+      "sourceQuote": "Participants must not have received any radiation therapy within 14 days prior to sub-study registration",
+      "qualification": "Participants must not have received any radiation therapy within 14 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete reconciled radiation history: never received radiation therapy.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have received any radiation therapy within 14 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "no_concurrent",
+      "sourceQuote": "Participants must not be planning to receive any concurrent chemotherapy, immunotherapy, biologic or hormonal therapy for cancer treatment while receiving treatment on this study",
+      "qualification": "Participants must not be planning to receive any concurrent chemotherapy, immunotherapy, biologic or hormonal therapy for cancer treatment while receiving treatment on this study",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Treating oncologist documents no planned concurrent chemotherapy, immunotherapy, biologic or hormonal cancer treatment.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not be planning to receive any concurrent chemotherapy, immunotherapy, biologic or hormonal therapy for cancer treatment while receiving treatment on this study"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "surgery",
+      "sourceQuote": "Participants must not have had major surgery excluding placement of vascular access or tumor biopsy, or had significant traumatic injury within 28 days prior to sub-study registration, or will not have fully recovered from surgery, or has surgery planned during the time the participant is expected to participate in the study\n\n  * NOTE: Participants with planned surgical procedures to be conducted under local anesthesia may participate",
+      "qualification": "Participants must not have had major surgery excluding placement of vascular access or tumor biopsy, or had significant traumatic injury within 28 days prior to sub-study registration, or will not have fully recovered from surgery, or has surgery planned during the time the participant is expected to participate in the study\n\n  * NOTE: Participants with planned surgical procedures to be conducted under local anesthesia may participate",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "No major surgery or significant traumatic injury in the preceding year; no unrecovered procedure; no surgery planned during study participation. Port insertion was uncomplicated.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have had major surgery excluding placement of vascular access or tumor biopsy, or had significant traumatic injury within 28 days prior to sub-study registration, or will not have fully recovered from surgery, or has surgery planned during the time the participant is expected to participate in the study\n\n  * NOTE: Participants with planned surgical procedures to be conducted under local anesthesia may participate"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "other_malignancy",
+      "sourceQuote": "Participants must not have a prior or concurrent malignancy whose natural history or treatment (in the opinion of the treating physician) has the potential to interfere with the safety or efficacy assessment of the investigational regimen",
+      "qualification": "Participants must not have a prior or concurrent malignancy whose natural history or treatment (in the opinion of the treating physician) has the potential to interfere with the safety or efficacy assessment of the investigational regimen",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Treating oncologist confirms no prior or concurrent malignancy other than NSCLC.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have a prior or concurrent malignancy whose natural history or treatment (in the opinion of the treating physician) has the potential to interfere with the safety or efficacy assessment of the investigational regimen"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "anc",
+      "sourceQuote": "Absolute neutrophil count \u2265 1.5 x 10\\^3/uL (within 28 days prior to sub-study registration)",
+      "qualification": "Absolute neutrophil count \u2265 1.5 x 10\\^3/uL (within 28 days prior to sub-study registration)",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Absolute neutrophil count 2.3 x10^3/uL.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Absolute neutrophil count \u2265 1.5 x 10\\^3/uL (within 28 days prior to sub-study registration)"
+          }
+        ]
+      },
+      "numeric": {
+        "analyte": "ANC",
+        "operator": ">=",
+        "value": 1.5,
+        "unit": "x10^3/uL",
+        "usesReferenceUpper": false
+      },
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "hemoglobin",
+      "sourceQuote": "Hemoglobin \\>= 10.0 g/dL (within 28 days prior to sub-study registration)",
+      "qualification": "Hemoglobin \\>= 10.0 g/dL (within 28 days prior to sub-study registration)",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Hemoglobin 11.5 g/dL.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Hemoglobin \\>= 10.0 g/dL (within 28 days prior to sub-study registration)"
+          }
+        ]
+      },
+      "numeric": {
+        "analyte": "hemoglobin",
+        "operator": ">=",
+        "value": 10,
+        "unit": "g/dL",
+        "usesReferenceUpper": false
+      },
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "platelets",
+      "sourceQuote": "Platelets \u2265 75 x 10\\^3/uL (within 28 days prior to sub-study registration)",
+      "qualification": "Platelets \u2265 75 x 10\\^3/uL (within 28 days prior to sub-study registration)",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Platelets 180 x10^3/uL.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Platelets \u2265 75 x 10\\^3/uL (within 28 days prior to sub-study registration)"
+          }
+        ]
+      },
+      "numeric": {
+        "analyte": "platelets",
+        "operator": ">=",
+        "value": 75,
+        "unit": "x10^3/uL",
+        "usesReferenceUpper": false
+      },
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "bilirubin",
+      "sourceQuote": "Total bilirubin \u2264 1.5 x institutional upper limit of normal (ULN) unless history of Gilbert's disease. Participants with history of Gilbert's disease must have total bilirubin \u2264 5 x institutional ULN (within 28 days prior to sub-study registration)",
+      "qualification": "Total bilirubin \u2264 1.5 x institutional upper limit of normal (ULN) unless history of Gilbert's disease. Participants with history of Gilbert's disease must have total bilirubin \u2264 5 x institutional ULN (within 28 days prior to sub-study registration)",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Total bilirubin 0.8 mg/dL; institutional ULN 1.2 mg/dL. No history of Gilbert syndrome.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Total bilirubin \u2264 1.5 x institutional upper limit of normal (ULN) unless history of Gilbert's disease. Participants with history of Gilbert's disease must have total bilirubin \u2264 5 x institutional ULN (within 28 days prior to sub-study registration)"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "ast_alt",
+      "sourceQuote": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) \u2264 3 \u00d7 institutional ULN. Participants with history of liver metastasis must have AST and ALT \u2264 5 x ULN (within 28 days prior to sub-study registration)",
+      "qualification": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) \u2264 3 \u00d7 institutional ULN. Participants with history of liver metastasis must have AST and ALT \u2264 5 x ULN (within 28 days prior to sub-study registration)",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "AST 20 U/L (ULN 40 U/L); ALT 22 U/L (ULN 40 U/L). No liver metastases.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) \u2264 3 \u00d7 institutional ULN. Participants with history of liver metastasis must have AST and ALT \u2264 5 x ULN (within 28 days prior to sub-study registration)"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "renal",
+      "sourceQuote": "Participants must have a serum creatinine \u2264 the institutional upper limit of normal (IULN) or calculated creatinine clearance \u2265 45 mL/min using the following Cockcroft-Gault Formula. This specimen must have been drawn and processed within 28 days prior to sub-study registration. For creatinine clearance formula see the tools on the CRA Workbench",
+      "qualification": "Participants must have a serum creatinine \u2264 the institutional upper limit of normal (IULN) or calculated creatinine clearance \u2265 45 mL/min using the following Cockcroft-Gault Formula. This specimen must have been drawn and processed within 28 days prior to sub-study registration. For creatinine clearance formula see the tools on the CRA Workbench",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Serum creatinine 0.9 mg/dL; institutional ULN 1.2 mg/dL. Specimen collected and processed today.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have a serum creatinine \u2264 the institutional upper limit of normal (IULN) or calculated creatinine clearance \u2265 45 mL/min using the following Cockcroft-Gault Formula. This specimen must have been drawn and processed within 28 days prior to sub-study registration. For creatinine clearance formula see the tools on the CRA Workbench"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "zubrod",
+      "sourceQuote": "Participants' most recent Zubrod performance status must be 0-2 and be documented within 28 days prior to sub-study registration",
+      "qualification": "Participants' most recent Zubrod performance status must be 0-2 and be documented within 28 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Zubrod performance status 1.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants' most recent Zubrod performance status must be 0-2 and be documented within 28 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "exam",
+      "sourceQuote": "Participants must have a completed medical history and physical exam within 28 days prior to sub-study registration",
+      "qualification": "Participants must have a completed medical history and physical exam within 28 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete medical history and physical examination performed today.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must have a completed medical history and physical exam within 28 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": {
+        "maxAgeDays": 28,
+        "anchor": "demo sub-study registration date"
+      }
+    },
+    {
+      "id": "cardiac",
+      "sourceQuote": "Participants with known history or current symptoms of cardiac disease, or history of treatment with cardiotoxic agents, must have a clinical risk assessment of cardiac function using the New York Heart Association Functional Classification. To be eligible for this trial, participants must be class 2B or better",
+      "qualification": "Participants with known history or current symptoms of cardiac disease, or history of treatment with cardiotoxic agents, must have a clinical risk assessment of cardiac function using the New York Heart Association Functional Classification. To be eligible for this trial, participants must be class 2B or better",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "No known cardiac disease, no cardiac symptoms and no prior cardiotoxic agent exposure. Clinical risk assessment documents NYHA class I.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants with known history or current symptoms of cardiac disease, or history of treatment with cardiotoxic agents, must have a clinical risk assessment of cardiac function using the New York Heart Association Functional Classification. To be eligible for this trial, participants must be class 2B or better"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "hiv",
+      "sourceQuote": "Participants with known human immunodeficiency virus (HIV)-infection must be on effective anti-retroviral therapy and have undetectable viral load test on the most recent test results obtained within 6 months prior to sub-study registration",
+      "qualification": "Participants with known human immunodeficiency virus (HIV)-infection must be on effective anti-retroviral therapy and have undetectable viral load test on the most recent test results obtained within 6 months prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "HIV testing negative; no known HIV infection.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants with known human immunodeficiency virus (HIV)-infection must be on effective anti-retroviral therapy and have undetectable viral load test on the most recent test results obtained within 6 months prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "hbv",
+      "sourceQuote": "Participants with evidence of chronic hepatitis B virus (HBV) infection must have undetectable HBV viral load while on suppressive therapy on the most recent test results obtained within 6 months prior to sub-study registration",
+      "qualification": "Participants with evidence of chronic hepatitis B virus (HBV) infection must have undetectable HBV viral load while on suppressive therapy on the most recent test results obtained within 6 months prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "HBV testing negative; no chronic hepatitis B infection.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants with evidence of chronic hepatitis B virus (HBV) infection must have undetectable HBV viral load while on suppressive therapy on the most recent test results obtained within 6 months prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "hcv",
+      "sourceQuote": "Participants with a history of hepatitis C virus (HCV) infection must have been treated and cured. Participants currently being treated for HCV infection must have undetectable HCV viral load test on the most recent test results obtained within 6 months prior to sub-study registration",
+      "qualification": "Participants with a history of hepatitis C virus (HCV) infection must have been treated and cured. Participants currently being treated for HCV infection must have undetectable HCV viral load test on the most recent test results obtained within 6 months prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "HCV antibody and RNA negative; no prior hepatitis C infection.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants with a history of hepatitis C virus (HCV) infection must have been treated and cured. Participants currently being treated for HCV infection must have undetectable HCV viral load test on the most recent test results obtained within 6 months prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "diabetes",
+      "sourceQuote": "Participants with known diabetes as determined by the treating investigator must show evidence of controlled disease within 14 days prior to sub-study registration",
+      "qualification": "Participants with known diabetes as determined by the treating investigator must show evidence of controlled disease within 14 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Investigator reviewed medical history: no diabetes.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants with known diabetes as determined by the treating investigator must show evidence of controlled disease within 14 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "pregnancy_test",
+      "sourceQuote": "Participants of reproductive potential must have a negative serum pregnancy test within 7 days prior to sub-study registration",
+      "qualification": "Participants of reproductive potential must have a negative serum pregnancy test within 7 days prior to sub-study registration",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Patient is 68 years old, postmenopausal for 16 years; no reproductive potential.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants of reproductive potential must have a negative serum pregnancy test within 7 days prior to sub-study registration"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "liver_infection",
+      "sourceQuote": "Participants must not have other clinically active infectious liver disease",
+      "qualification": "Participants must not have other clinically active infectious liver disease",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Investigator confirms no clinically active infectious liver disease.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have other clinically active infectious liver disease"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "hypertension",
+      "sourceQuote": "Participants must not have clinically significant hypertension within 28 days prior to sub-study registration as determined by the treating investigator",
+      "qualification": "Participants must not have clinically significant hypertension within 28 days prior to sub-study registration as determined by the treating investigator",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Blood pressure 122/74 mmHg; investigator confirms no clinically significant hypertension.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have clinically significant hypertension within 28 days prior to sub-study registration as determined by the treating investigator"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "pneumonitis",
+      "sourceQuote": "Participants must not have a history of pneumonitis that required drug therapy or an active symptomatic interstitial lung disease (ILD)/pneumonitis, including drug-induced or radiation ILD/pneumonitis",
+      "qualification": "Participants must not have a history of pneumonitis that required drug therapy or an active symptomatic interstitial lung disease (ILD)/pneumonitis, including drug-induced or radiation ILD/pneumonitis",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Complete pulmonary history: no pneumonitis requiring drug therapy, no active symptomatic ILD or pneumonitis.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have a history of pneumonitis that required drug therapy or an active symptomatic interstitial lung disease (ILD)/pneumonitis, including drug-induced or radiation ILD/pneumonitis"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "infection",
+      "sourceQuote": "Participants must not have ongoing or active infection or be diagnosed or suspected viral infection as determined by the treating investigator. NOTE: Participants that have an infection requiring antimicrobial therapy will be required to complete antibiotics 1 week prior to starting treatment",
+      "qualification": "Participants must not have ongoing or active infection or be diagnosed or suspected viral infection as determined by the treating investigator. NOTE: Participants that have an infection requiring antimicrobial therapy will be required to complete antibiotics 1 week prior to starting treatment",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Investigator finds no ongoing or active infection or diagnosed or suspected viral infection. No antimicrobial therapy.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have ongoing or active infection or be diagnosed or suspected viral infection as determined by the treating investigator. NOTE: Participants that have an infection requiring antimicrobial therapy will be required to complete antibiotics 1 week prior to starting treatment"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "bleeding",
+      "sourceQuote": "Participants must not have active bleeding diathesis as determined by the treating investigator",
+      "qualification": "Participants must not have active bleeding diathesis as determined by the treating investigator",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Investigator confirms no active bleeding diathesis.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have active bleeding diathesis as determined by the treating investigator"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "oxygenation",
+      "sourceQuote": "Participants must not have impaired oxygenation requiring continuous oxygen supplementation as determined by the treating investigator",
+      "qualification": "Participants must not have impaired oxygenation requiring continuous oxygen supplementation as determined by the treating investigator",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Room air oxygen saturation 97%; investigator confirms no impaired oxygenation requiring continuous supplementation.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have impaired oxygenation requiring continuous oxygen supplementation as determined by the treating investigator"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "compliance",
+      "sourceQuote": "Participants must not have psychiatric illness, social situation, or any other circumstances that would limit compliance with study requirements as determined by the treating investigator",
+      "qualification": "Participants must not have psychiatric illness, social situation, or any other circumstances that would limit compliance with study requirements as determined by the treating investigator",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Investigator assessment: no psychiatric, social or other circumstance currently limiting adherence to study requirements.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have psychiatric illness, social situation, or any other circumstances that would limit compliance with study requirements as determined by the treating investigator"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "ophthalmology",
+      "sourceQuote": "Participants must not have any ophthalmologic condition that is unstable in the opinion of the treating investigator",
+      "qualification": "Participants must not have any ophthalmologic condition that is unstable in the opinion of the treating investigator",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Investigator confirms no unstable ophthalmologic condition.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not have any ophthalmologic condition that is unstable in the opinion of the treating investigator"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "pregnancy_contraception",
+      "sourceQuote": "Participants must not be pregnant or breastfeeding (nursing includes breast milk fed to an infant by any means, including from the breast, milk expressed by hand, or pumped). Individuals who are of reproductive potential must have agreed to use an effective contraceptive method with details provided as a part of the consent process. A person who has had menses at any time in the preceding 12 consecutive months or who has semen likely to contain sperm is considered to be of \"reproductive potential.\" In addition to routine contraceptive methods, \"effective contraception\" also includes refraining from sexual activity that might result in pregnancy and surgery intended to prevent pregnancy (or with a side-effect of pregnancy prevention) including hysterectomy, bilateral oophorectomy, bilateral tubal ligation/occlusion, and vasectomy with testing showing no sperm in the semen",
+      "qualification": "Participants must not be pregnant or breastfeeding (nursing includes breast milk fed to an infant by any means, including from the breast, milk expressed by hand, or pumped). Individuals who are of reproductive potential must have agreed to use an effective contraceptive method with details provided as a part of the consent process. A person who has had menses at any time in the preceding 12 consecutive months or who has semen likely to contain sperm is considered to be of \"reproductive potential.\" In addition to routine contraceptive methods, \"effective contraception\" also includes refraining from sexual activity that might result in pregnancy and surgery intended to prevent pregnancy (or with a side-effect of pregnancy prevention) including hysterectomy, bilateral oophorectomy, bilateral tubal ligation/occlusion, and vasectomy with testing showing no sperm in the semen",
+      "polarity": "inclusion",
+      "category": "chart",
+      "evidenceDescription": "Postmenopausal for 16 years; not pregnant or breastfeeding; no reproductive potential. Future consent discussion remains pending.",
+      "chartCheckable": true,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must not be pregnant or breastfeeding (nursing includes breast milk fed to an infant by any means, including from the breast, milk expressed by hand, or pumped). Individuals who are of reproductive potential must have agreed to use an effective contraceptive method with details provided as a part of the consent process. A person who has had menses at any time in the preceding 12 consecutive months or who has semen likely to contain sperm is considered to be of \"reproductive potential.\" In addition to routine contraceptive methods, \"effective contraception\" also includes refraining from sexual activity that might result in pregnancy and surgery intended to prevent pregnancy (or with a side-effect of pregnancy prevention) including hysterectomy, bilateral oophorectomy, bilateral tubal ligation/occlusion, and vasectomy with testing showing no sperm in the semen"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "ctdna",
+      "sourceQuote": "Participants must agree to have blood specimens submitted for circulating tumor DNA (ctDNA)",
+      "qualification": "Participants must agree to have blood specimens submitted for circulating tumor DNA (ctDNA)",
+      "polarity": "inclusion",
+      "category": "visit",
+      "evidenceDescription": "Confirm at consent visit; not yet performed.",
+      "chartCheckable": false,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must agree to have blood specimens submitted for circulating tumor DNA (ctDNA)"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "banking",
+      "sourceQuote": "Participants must also be offered participation in specimen banking. With participant consent, specimens must be collected and submitted via the SWOG Specimen Tracking System",
+      "qualification": "Participants must also be offered participation in specimen banking. With participant consent, specimens must be collected and submitted via the SWOG Specimen Tracking System",
+      "polarity": "inclusion",
+      "category": "visit",
+      "evidenceDescription": "Confirm at consent visit; not yet performed.",
+      "chartCheckable": false,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must also be offered participation in specimen banking. With participant consent, specimens must be collected and submitted via the SWOG Specimen Tracking System"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    },
+    {
+      "id": "consent",
+      "sourceQuote": "Participants must be informed of the investigational nature of this study and must sign and give informed consent in accordance with institutional and federal guidelines\n\n  * NOTE: Participants with impaired decision-making capabilities, legally authorized representatives may sign and give informed consent on behalf of study participants in accordance with applicable federal, local, and Central Institutional Review Board (CIRB) regulations",
+      "qualification": "Participants must be informed of the investigational nature of this study and must sign and give informed consent in accordance with institutional and federal guidelines\n\n  * NOTE: Participants with impaired decision-making capabilities, legally authorized representatives may sign and give informed consent on behalf of study participants in accordance with applicable federal, local, and Central Institutional Review Board (CIRB) regulations",
+      "polarity": "inclusion",
+      "category": "visit",
+      "evidenceDescription": "Confirm at consent visit; not yet performed.",
+      "chartCheckable": false,
+      "expression": {
+        "rootId": "condition",
+        "nodes": [
+          {
+            "id": "condition",
+            "operator": "condition",
+            "childIds": [],
+            "condition": "Participants must be informed of the investigational nature of this study and must sign and give informed consent in accordance with institutional and federal guidelines\n\n  * NOTE: Participants with impaired decision-making capabilities, legally authorized representatives may sign and give informed consent on behalf of study participants in accordance with applicable federal, local, and Central Institutional Review Board (CIRB) regulations"
+          }
+        ]
+      },
+      "numeric": null,
+      "temporal": null
+    }
+  ]
+}

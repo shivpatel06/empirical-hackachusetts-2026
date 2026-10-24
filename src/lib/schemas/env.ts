@@ -17,6 +17,7 @@ function isValidTimeZone(timeZone: string): boolean {
  * `src/server/env.ts`, which is guarded by `server-only`.
  */
 export const serverEnvSchema = z.object({
+  AI_MODE: z.preprocess(emptyToUndefined, z.enum(["fixture", "live"]).default("fixture")),
   OPENAI_API_KEY: z.preprocess(emptyToUndefined, z.string().trim().min(1).optional()),
   DATABASE_PATH: z.preprocess(emptyToUndefined, z.string().min(1).default("./data/app.db")),
   DEMO_MODE: z.preprocess(

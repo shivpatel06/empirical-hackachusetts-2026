@@ -14,9 +14,12 @@
     "test": "vitest run",
     "db:migrate": "tsx scripts/db-migrate.ts",
     "db:seed": "tsx scripts/db-seed.ts",
-    "setup": "npm run db:migrate && npm run db:seed"
+    "setup": "npm run db:migrate && npm run db:seed",
+    "ai:probe": "NODE_OPTIONS=--conditions=react-server tsx scripts/ai-probe.ts",
+    "ai:smoke": "NODE_OPTIONS=--conditions=react-server tsx scripts/ai-smoke.ts"
   },
   "dependencies": {
+    "@openai/agents": "0.21.0",
     "better-sqlite3": "^12.11.1",
     "next": "^16.4.3",
     "react": "^19.3.1",
@@ -29,6 +32,7 @@
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "fast-check": "4.10.2",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
