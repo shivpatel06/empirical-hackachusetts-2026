@@ -4,11 +4,12 @@ import { z } from "zod";
 import { safeAiError } from "./contracts";
 import type { ModelConfig } from "./openai";
 
-// Ordered candidates, NOT claims of account access. Every selected model passes a live probe.
-// Verified catalog: https://developers.openai.com/api/docs/models (2026-10-24).
+// Cost policy: use Luna for extraction/screening and gap investigation.
+// Never automatically escalate to another model; an override must be deliberate.
+// Candidates are not claims of account access. Selection still requires a live probe.
 export const MODEL_CANDIDATES = {
-  screening: ["gpt-6-astra", "gpt-6.1-sol", "gpt-6-luna"],
-  gap: ["gpt-6-luna", "gpt-6.1-sol", "gpt-6-astra"],
+  screening: ["gpt-6-luna"],
+  gap: ["gpt-6-luna"],
 } as const;
 export const modelConfigSchema = z.object({
   SCREENING_MODEL: z.string().min(1).max(100), GAP_MODEL: z.string().min(1).max(100),

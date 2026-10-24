@@ -56,10 +56,9 @@ The following implementation constraints are grounded in the current official `@
 
 - **Zod v4 dependency pin**: `@openai/agents` requires Zod v4 (not v3). The shared Zod validation layer described above (tool arguments, structured output, and API request bodies) must therefore be Zod v4. Record this as a hard setup constraint before any integration code is written.
 
-- **Two-tier model configuration (probe-then-pin)**: At setup, a startup probe tries a prioritized list of models the account's `OPENAI_API_KEY` can call and pins the first available into a single `MODEL_CONFIG` constant with two roles:
-  - `SCREENING_MODEL`: the strongest available general-reasoning model, used for the accuracy-critical `extract` and per-rule `screen` calls.
-  - `GAP_MODEL`: a faster/cheaper tier acceptable for the gap-investigation loop, because that loop only selects among six tools and the deterministic guardrails re-validate everything it surfaces.
-  - If only one model is available, use it for both roles and record that fact. Never present a fixture-adapter run as a live model run. The exact model IDs are discovered by the probe and recorded at setup rather than hard-coded here, because model names change over time.
+- **Luna default (user decision, October 24; configured by Codex)**: Both `SCREENING_MODEL` (extraction and screening) and `GAP_MODEL` use `gpt-6-luna`. Setup probes only Luna and pins a successful result in the ignored `data/model-config.json`. It does not automatically fall back to Astra or Sol; another model requires a deliberate configuration change. Existing installations must update their pinned config and restart the server to clear its cached adapter.
+  - Use fixture/mock tests for routine development. Live probes and smoke tests are billable and separate from the deterministic suite.
+  - Prior Astra verification does not establish Luna extraction/screening quality. Full-trial Luna verification remains pending; model choice does not replace coordinator review or deterministic guardrails. Never present a fixture run as a live model run.
 
 - **Structured calls vs agent loop split** (reinforcing the existing thin AI interface):
   - `extract(trial)` and `screen(patient, checklist)` are single structured calls, NOT agent loops. Implement each with a Zod v4 `outputType` schema and `maxTurns: 1` and no tools. The model only proposes per-rule findings; code decides everything after.
