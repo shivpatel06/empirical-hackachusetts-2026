@@ -2,6 +2,7 @@ import "server-only";
 import OpenAI from "openai";
 import { z } from "zod";
 import { outreachDraftSchema } from "../../lib/journey";
+import { patientName, clinicianName } from "../../lib/sample-profiles";
 import type { AgentObserver, OutreachInput } from "./contracts";
 import {
   Agent,
@@ -207,7 +208,8 @@ Investigate only the listed unresolved rules for this synthetic patient. Select 
 before drafting questions or requests. You have at most six tool actions including finish.
 Do not repeat identical calls. If evidence is absent, draft a request for EXISTING records or ask
 the coordinator. New tests may only be proposed in a question, never ordered. Call finish when done.
-You cannot change chart facts, resolve status, send messages, or approve anything.`,
+You cannot change chart facts, resolve status, send messages, or approve anything.
+Use the supplied display name in readable, professional requests. The workspace already labels fictional data and simulated delivery; do not repeat demo disclaimers in correspondence. Do not claim a request was delivered.`,
       tools,
       resetToolChoice: true,
       modelSettings: {
@@ -230,6 +232,7 @@ You cannot change chart facts, resolve status, send messages, or approve anythin
         agent,
         JSON.stringify({
           patientId: patient.id,
+          displayName: patientName(patient.id),
           unresolvedRules,
           demoAssessmentAt: this.clock().toISOString(),
           task: "Find existing evidence or draft the next reviewable step. No real patient data or sends.",
@@ -264,7 +267,7 @@ You cannot change chart facts, resolve status, send messages, or approve anythin
       name: "Care-team outreach drafter",
       model: this.models.GAP_MODEL,
       instructions: `${evidenceInstructions}
-Read the verified case before writing. Draft a concise physician note asking the treating doctor to discuss the trial, and a plain-language patient summary in the requested language for CARE-TEAM HANDOFF ONLY. Include voluntary participation, no guaranteed benefit, and questions for the care team. Mention pending formal screening/consent. Do not assert enrollment or final eligibility. Use only the supplied cited findings and distinguish coordinator review from automated support. Translations are unvalidated drafts. Never send anything.`,
+Read the verified case before writing. Draft a concise physician note asking the treating doctor to discuss the trial, and a plain-language patient summary in the requested language for CARE-TEAM HANDOFF ONLY. Include voluntary participation, no guaranteed benefit, and questions for the care team. Mention pending formal screening/consent. Do not assert enrollment or final eligibility. Use only the supplied cited findings and distinguish coordinator review from automated support. Translations are unvalidated drafts. Never send anything. Use the supplied patient display name and clinician in natural correspondence. The workspace labels fictional data and simulated delivery; do not repeat demo disclaimers inside the drafts or claim that delivery occurred.`,
       tools: [
         tool({
           name: "read_verified_case",
@@ -281,7 +284,8 @@ Read the verified case before writing. Draft a concise physician note asking the
             });
             return JSON.stringify({
               patientId: input.patient.id,
-              clinician: input.patient.clinician,
+              displayName: patientName(input.patient.id),
+              clinician: clinicianName(input.patient.id, input.patient.clinician),
               nextVisit: input.patient.nextVisit,
               trial: input.trialTitle,
               trialId: input.trialId,

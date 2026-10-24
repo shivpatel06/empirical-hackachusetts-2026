@@ -71,6 +71,10 @@ describe("agent journey", () => {
     expect(
       journey.view().items.filter((i) => i.kind === "request"),
     ).toHaveLength(2);
+    const after = store.view().patients.find((patient) => patient.id === p.id)!;
+    expect(after.screening).toEqual(p.screening);
+    expect(after.revision).toBe(p.revision);
+    expect(after.chart).toEqual(p.chart);
   });
   it("completes request → approved synthetic replies → guarded match → outreach → recorded follow-up", async () => {
     const { store, journey } = await setup();

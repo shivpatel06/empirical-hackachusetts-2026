@@ -1,0 +1,11 @@
+.sample-notice {
+  max-width: 65ch;
+  font-size: 13px;
+}
+.sample-notice summary {
+  cursor: pointer;
+}
+.sample-notice p {
+  line-height: 1.65;
+  margin: 12px 0 0;
+}

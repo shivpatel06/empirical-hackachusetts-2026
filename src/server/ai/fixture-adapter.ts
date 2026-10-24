@@ -16,6 +16,7 @@ import {
   DEMO_TIME,
 } from "./fixtures";
 import { GapSession } from "./gap-tools";
+import { patientName, clinicianName } from "../../lib/sample-profiles";
 
 /** Exact fixture replay, not an alternative screening engine. Unknown/edited inputs fail closed. */
 export class FixtureAdapter implements AiAdapter {
@@ -82,20 +83,24 @@ export class FixtureAdapter implements AiAdapter {
       });
       execute("draft_records_request", {
         ruleId: rule.id,
-        request: `Please provide the latest existing ${rule.id === "brain_imaging" ? "brain imaging report" : rule.id === "hemoglobin" ? "hemoglobin result" : "record for " + rule.id.replaceAll("_", " ")}, including its observation date and source. This is a simulated request for records, not a new test order.`,
+        request: `Re: ${patientName(patient.id)}\n\nPlease send the most recent ${rule.id === "brain_imaging" ? "brain MRI report" : rule.id === "hemoglobin" ? "CBC with hemoglobin result" : "record for " + rule.id.replaceAll("_", " ")} for trial prescreening. Include the ${rule.id === "hemoglobin" ? "collection date, result, units and reference range" : "study date and interpreting clinician"}. We are requesting an existing record; no new test is being ordered.\n\nThank you,\nThoracic Oncology Research`,
       });
     }
     execute("finish", {
       summary:
-        "Fixture simulation completed. Review the drafted requests; no model selected these tools.",
+        "Record review complete. Requests are ready for coordinator approval.",
     });
     return session.trail("fixture", null);
   }
   async draftOutreach(input: OutreachInput, observer?: AgentObserver) {
-    const citations = input.result.rules
+    const supported = input.result.rules
       .filter((r) => r.status === "met" && !r.review)
-      .flatMap((r) => r.citations)
-      .slice(0, 3);
+      .filter((r) => r.citations.length);
+    const preferred = ["nsclc_met", "hemoglobin", "brain_imaging"];
+    const ordered = [...supported].sort((a, b) =>
+      (preferred.includes(a.ruleId) ? preferred.indexOf(a.ruleId) : preferred.length) -
+      (preferred.includes(b.ruleId) ? preferred.indexOf(b.ruleId) : preferred.length));
+    const citations = ordered.flatMap((r) => r.citations).slice(0, 3);
     observer?.step({
       sequence: 1,
       tool: "read_verified_case",
@@ -114,7 +119,7 @@ export class FixtureAdapter implements AiAdapter {
         "Ekip swen ou ap egzamine yon etid ki ka yon opsyon pou ou. Se ou ki chwazi si ou vle patisipe. Gen lòt verifikasyon ki nesesè. Mande ekip ou sou risk yo, lòt opsyon yo ak vizit yo. Pa gen garanti benefis.",
     };
     return {
-      physician: `To ${input.patient.clinician}: Please discuss ${input.trialId} with this synthetic patient at their next visit. Supported chart findings: ${citations.map((c) => c.quote).join(" ")} Coordinator review: ${input.reviewNote}. Formal eligibility and consent checks remain pending. This is a fixture draft for simulated delivery only.`,
+      physician: `To: ${clinicianName(input.patient.id, input.patient.clinician)}\nRe: ${patientName(input.patient.id)} · ${input.trialId} prescreening\n\nThe reviewed chart suggests a potential match for this study. Please consider discussing the study at the next visit.\n\nRelevant findings:\n${citations.map((c) => `• ${c.quote}`).join("\n")}\n\nCoordinator review: ${input.reviewNote}\n\nFormal eligibility, visit checks and informed consent remain pending. Please let the research team know whether a discussion would be appropriate.`,
       summary: summaries[input.language]!,
       citedLineIds: citations.map((c) => c.lineId),
     };

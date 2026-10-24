@@ -9,7 +9,7 @@ import {
   type AgentRun,
   type OutreachCase,
 } from "../../lib/journey";
-import { patientName, patientStatus, formatDate } from "./presentation";
+import { patientName, patientStatus, formatDate, clinicianName } from "./presentation";
 import { EvidenceWorkspace } from "./evidence";
 type Act = (body: object, message: string) => Promise<void>;
 const itemLabels = {
@@ -87,7 +87,7 @@ export function PatientJourney({
           <p className="eyebrow">Patient journey</p>
           <h1 tabIndex={-1}>{patientName(patient.id)}</h1>
           <p>
-            {patient.diagnosis} · Visit {formatDate(patient.nextVisit)}
+            {patient.diagnosis} · {clinicianName(patient.id, patient.clinician)} · Visit {formatDate(patient.nextVisit)}
           </p>
         </div>
         <span className="status status--info">
@@ -151,7 +151,7 @@ export function PatientJourney({
                   >
                     <option value="live">Live Luna · uses API credits</option>
                     <option value="fixture">
-                      Fixture walkthrough · no AI calls
+                      Sample run · no AI calls
                     </option>
                   </select>
                 </label>
@@ -310,7 +310,7 @@ export function PatientJourney({
             <span>{active ? "● Working" : "Saved actions"}</span>
           </div>
           <p className="journey-caption">
-            Actual tool results. Live runs use Luna. Fixture runs are labeled.
+            Records checked, requests prepared, and next steps saved.
           </p>
           {runs.length ? (
             runs
@@ -360,10 +360,10 @@ export function PatientJourney({
         </div>
       </details>
       <details className="disclosure">
-        <summary>Demo controls & history</summary>
+        <summary>Walkthrough controls & history</summary>
         <div className="disclosure-body">
           <p>
-            All records are synthetic. Delivery and replies are simulated.
+            Advance the walkthrough clock or review earlier activity.
             Advancing the follow-up clock creates due reminder drafts and does
             not change clinical assessment dates.
           </p>
@@ -412,7 +412,7 @@ function AgentActivity({
           {run.kind === "gap" ? "Gap investigator" : "Outreach drafter"}
         </strong>
         <span>
-          {run.mode === "live" ? "Live Luna" : "Fixture simulation"} ·{" "}
+          {run.mode === "live" ? "Live Luna" : "Sample run"} ·{" "}
           {run.stale ? "Previous inputs" : run.state}
         </span>
       </div>
@@ -502,7 +502,7 @@ function ReviewItem({
     <section className="card journey-panel">
       <p className="eyebrow">
         {item.mode === "fixture"
-          ? "Fixture draft"
+          ? "Prepared draft"
           : item.mode === "live"
             ? "Luna draft"
             : "System draft"}{" "}
@@ -562,14 +562,14 @@ function ReviewItem({
                       decision: "approve",
                     },
                     item.kind === "summary"
-                      ? "Care-team handoff approved (simulated). No patient contact."
-                      : "Approved and recorded as simulated delivery. No external message sent.",
+                      ? "Care-team handoff approved."
+                      : "Approval saved in this workspace.",
                   )
                 }
               >
                 {item.kind === "summary"
                   ? "Approve care-team handoff"
-                  : "Approve simulated send"}
+                  : item.kind === "physician" ? "Approve physician note" : item.kind === "reminder" ? "Approve reminder" : "Approve request"}
               </button>
               <button
                 className="btn"
@@ -603,7 +603,7 @@ function ReviewItem({
         <>
           <p className="journey-caption">
             {item.kind === "request"
-              ? "Awaiting an existing record. Approve both demo requests before loading their replies."
+              ? "Awaiting records. Approve both requests before receiving the replies."
               : "Add evidence with a source and observation date."}
           </p>
           {demo && item.kind === "request" && (
@@ -617,15 +617,15 @@ function ReviewItem({
                     id: item.id,
                     revision: item.revision,
                   },
-                  "Authored synthetic replies added. Re-screening this patient now.",
+                  "Records received. Re-screening this patient now.",
                 )
               }
             >
-              Receive approved demo replies
+              Receive records
             </button>
           )}
           <details>
-            <summary>Enter a sourced synthetic reply</summary>
+            <summary>Add a record manually</summary>
             <div className="journey-form">
               <label>
                 Evidence
@@ -683,11 +683,9 @@ function ReviewItem({
           </details>
         </>
       )}
-      <p className="journey-caption">
-        {item.kind === "summary"
-          ? "Translation is an unvalidated draft for clinician review. No direct patient contact."
-          : "Demo only. Nothing is sent outside this workspace."}
-      </p>
+      {item.kind === "summary" && <p className="journey-caption">
+        Translation draft · Care-team review required.
+      </p>}
     </section>
   );
 }

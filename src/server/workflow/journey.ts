@@ -13,6 +13,7 @@ import {
 import type { Patient, ChartLine } from "../../lib/schemas/ai";
 import type { ScreeningResult } from "../../lib/workflow";
 import { demoReply } from "./demo-replies";
+import { recordTitle } from "../../lib/sample-profiles";
 type Row = Record<string, any>;
 const toolTitles: Record<string, string> = {
   search_chart: "Searched patient chart",
@@ -509,7 +510,7 @@ export class JourneyStore {
           : "Outreach drafting started",
         run.mode === "live"
           ? "Luna is working. Actual tool results appear below."
-          : "Fixture simulation. No AI call.",
+          : "Reading the chart and current criteria.",
       );
       if (run.kind === "gap") {
         const unresolved = result.rules
@@ -568,7 +569,7 @@ export class JourneyStore {
               s,
               null,
               "question",
-              "The investigation stopped with unresolved criteria. Review the tool results and add any missing synthetic evidence with its source and observation date. Do not infer an absent result.",
+              "The investigation stopped with unresolved criteria. Review the tool results and add any missing evidence with its source and observation date. Do not infer an absent result.",
               `gap:${s.id}:human-handoff`,
             );
           }
@@ -632,7 +633,10 @@ export class JourneyStore {
             run.id,
             "physician",
             draft.physician +
-              `\n\nEvidence: ${draft.citedLineIds.join(", ")}. Formal eligibility remains unconfirmed.`,
+              `\n\nSources: ${draft.citedLineIds.map((id) => {
+                const line = p.chart.find((record) => record.id === id)!;
+                return `${recordTitle(line.source, line.id)} (${line.observedAt.slice(0, 10)})`;
+              }).join("; ")}.`,
             `outreach:${s.id}:physician`,
           );
           this.addItem(

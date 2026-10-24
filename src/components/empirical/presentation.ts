@@ -1,4 +1,6 @@
 import type { PatientView, ScreeningStatus } from "../../lib/workflow";
+import { patientName, clinicianName } from "../../lib/sample-profiles";
+export { patientName, clinicianName, recordTitle } from "../../lib/sample-profiles";
 
 export const statusLabels: Record<ScreeningStatus, string> = {
   likely_match: "Potential match",
@@ -6,7 +8,6 @@ export const statusLabels: Record<ScreeningStatus, string> = {
   needs_review: "Needs review",
   ruled_out: "Ruled out",
 };
-export const patientName = (id: string) => `Patient ${id.split("-").at(-1)}`;
 export function currentStatus(patient: PatientView): ScreeningStatus | null {
   return patient.screening && !patient.screening.stale
     ? patient.screening.result.status
@@ -50,7 +51,7 @@ export function visiblePatients(
       return (
         (filter === "all" || status === filter) &&
         (!q ||
-          [patientName(p.id), p.id, p.diagnosis, p.clinician].some((s) =>
+          [patientName(p.id), p.id, p.diagnosis, p.clinician, clinicianName(p.id, p.clinician)].some((s) =>
             s.toLowerCase().includes(q),
           ))
       );

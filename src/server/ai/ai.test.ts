@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import fc from "fast-check";
 import {
   Usage,
   type Model,
@@ -70,6 +71,21 @@ function message(value: unknown): ModelResponse {
 }
 
 describe("patient-scoped gap tools", () => {
+  it("arbitrary draft text cannot mutate evidence or the computed status", () => {
+    fc.assert(fc.property(fc.string({ minLength: 1, maxLength: 1000 }), (request) => {
+      const fixture = structuredClone(cohort[2]!);
+      const before = structuredClone(fixture.patient);
+      const result = checkScreening(fixture.patient, checklist, fixture.proposals, new Date(DEMO_TIME), "fixture");
+      const session = new GapSession(fixture.patient, ["hemoglobin"]);
+      session.execute("draft_records_request", { ruleId: "hemoglobin", request });
+      session.execute("ask_coordinator", { ruleId: "hemoglobin", question: request });
+      session.execute("finish", { summary: request });
+      expect(session.patient).toEqual(before);
+      expect(fixture.patient).toEqual(before);
+      expect(checkScreening(fixture.patient, checklist, fixture.proposals, new Date(DEMO_TIME), "fixture")).toEqual(result);
+      expect(session.actions[0]!.result).toMatchObject({ state: "pending_review", sent: false });
+    }), { numRuns: 100 });
+  });
   it("rejects model-supplied patient IDs and never exposes another patient's data", () => {
     const session = new GapSession(patient, ["hemoglobin"]);
     expect(

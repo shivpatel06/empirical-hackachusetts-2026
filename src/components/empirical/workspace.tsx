@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { WorkflowView, PatientView } from "../../lib/workflow";
 import { BrandMark } from "./components/BrandMark";
 import { SiteMenu } from "./components/SiteMenu";
+import { SampleNotice } from "./components/SampleNotice";
 import {
   applyTheme,
   readTheme,
@@ -47,12 +48,14 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
   const [navOpen, setNavOpen] = useState(false),
     [demoOpen, setDemoOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeId>("sea");
+  const [recording, setRecording] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null),
     mainRef = useRef<HTMLElement>(null),
     dialogRef = useRef<HTMLDialogElement>(null);
   const requestEpoch = useRef(0),
     busyRef = useRef(false);
   useEffect(() => {
+    setRecording(new URLSearchParams(window.location.search).get("recording") === "1");
     if (new URLSearchParams(window.location.search).get("view") === "worklist")
       setPage("Worklist");
     const saved = readTheme();
@@ -183,7 +186,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
     void act({ action: "select", trialId: id }, "Trial opened.");
   };
   return (
-    <div className="app empirical-app">
+    <div className="app empirical-app" data-recording={recording || undefined}>
       <a className="skip-link" href="#main">
         Skip to workspace
       </a>
@@ -217,13 +220,13 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
             </ul>
           </nav>
           <div className="topnav-right">
-            <button
+            {!recording && <button
               className="demo-btn"
               onClick={() => setDemoOpen(true)}
               inert={navOpen}
             >
-              Demo
-            </button>
+              Workspace
+            </button>}
             <button
               ref={toggleRef}
               className="menu-toggle"
@@ -240,12 +243,8 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
       </header>
       <main id="main" className="main" ref={mainRef} inert={navOpen}>
         <div className="integration-context">
-          <span>Synthetic patient data · Not for clinical use</span>
-          <span>
-            {view.mode === "fixture"
-              ? "Screening: fixture simulation"
-              : "Screening: live AI · Synthetic records"}
-          </span>
+          <SampleNotice />
+          {view.mode === "live" && <span>Live AI screening</span>}
         </div>
         {(error || connectionError) && (
           <div className="card integration-notice error" role="alert">
@@ -491,14 +490,14 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
                         Registry: {view.trial?.recruitingStatus} · Local
                         availability:{" "}
                         {view.trial?.localOpen
-                          ? "confirmed for synthetic demo"
+                          ? "confirmed at this program"
                           : "awaiting confirmation"}
                       </p>
                       <p>
                         Checklist:{" "}
                         {view.checklist?.mode === "live"
                           ? "Live AI extraction"
-                          : "Fixture simulation"}{" "}
+                          : "Sample screening"}{" "}
                         · Assessment {formatDate(view.assessmentAt)}
                       </p>
                       <div className="integration-actions">
@@ -563,7 +562,7 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
           current: t.id === view.trial?.id,
           detail: t.title,
         }))}
-        footer="Synthetic patient data. No messages are sent."
+        footer="Oncology research workspace"
         onNavigate={(id) => go(id as Page)}
         onSelectTrial={selectTrial}
         theme={theme}
@@ -576,14 +575,14 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
         onCancel={() => setDemoOpen(false)}
         onClose={() => setDemoOpen(false)}
       >
-        <h2>About this demo</h2>
+        <h2>Workspace details</h2>
         <p>
-          Synthetic patients and a public trial registry snapshot. Changes to
+          Fictional patient records and a public trial registry snapshot. Changes to
           trial criteria and screening are saved on the server.
         </p>
         <p>
           {view.mode === "fixture"
-            ? "Fixture simulation is active. Screening uses deterministic sample proposals; no AI calls are made by screening."
+            ? "Sample screening uses prepared responses without AI calls."
             : "Live AI is active. Model proposals are checked by deterministic evidence guards."}
         </p>
         <p>
@@ -592,8 +591,8 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
           Clinical validation remains pending.
         </p>
         <p>
-          For a no-cost rehearsal, prepare the authored checklist, approve it,
-          then open patient 03. Existing patient evidence and previous runs are
+          For a fresh walkthrough, prepare the sample checklist, approve it,
+          then open Elena Rivera. Existing patient evidence and previous runs are
           retained.
         </p>
         <button
@@ -602,12 +601,12 @@ export function EmpiricalWorkspace({ initial }: { initial: WorkflowView }) {
           onClick={async () => {
             await act(
               { action: "prepare_walkthrough" },
-              "Fixture checklist prepared. Review and approve it to screen the cohort without AI calls.",
+              "Sample checklist prepared. Review and approve it to screen the cohort.",
             );
             setDemoOpen(false);
           }}
         >
-          Prepare fixture walkthrough
+          Prepare sample walkthrough
         </button>
         <button className="btn btn--primary" onClick={() => setDemoOpen(false)}>
           Close

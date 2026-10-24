@@ -17,7 +17,7 @@ export const outreachStages = [
 ] as const;
 export const stageLabel: Record<string, string> = {
   drafts: "Preparing outreach",
-  doctor_notified: "Doctor notified (simulated)",
+  doctor_notified: "Physician note approved",
   doctor_responded: "Doctor responded",
   discussed_at_visit: "Discussed at visit",
   patient_interested: "Patient interested",

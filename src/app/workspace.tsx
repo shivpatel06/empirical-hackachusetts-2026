@@ -4,6 +4,8 @@ import type { CheckedRule, PatientView, WorkflowView } from "../lib/workflow";
 import type { ChecklistDraft } from "../lib/schemas/ai";
 
 import { CriterionExpression } from "./criterion-expression";
+import { patientName, clinicianName } from "../lib/sample-profiles";
+import { SampleNotice } from "../components/empirical/components/SampleNotice";
 
 type Tab = "Trials" | "Worklist" | "Archive" | "Activity";
 const labels = {
@@ -30,7 +32,6 @@ const ruleNames: Record<string, string> = {
 const shortRule = (id: string) =>
   ruleNames[id] ??
   id.replaceAll("_", " ").replace(/^./, (s) => s.toUpperCase());
-const patientName = (id: string) => `Patient ${id.split("-").at(-1)}`;
 const date = (value: string | null) =>
   value
     ? new Intl.DateTimeFormat("en-US", {
@@ -220,21 +221,14 @@ export function Workspace({
         <div className="sidebar-bottom">
           <div className="avatar">DC</div>
           <div>
-            Demo coordinator<small>Oncology research</small>
+            Research coordinator<small>Oncology research</small>
           </div>
         </div>
       </aside>
       <div className="workspace">
         <div className="demo-bar">
-          <span>
-            <span className="demo-dot" />
-            Synthetic demo data · Not for clinical use
-          </span>
-          <span>
-            {view.mode === "fixture"
-              ? "Fixture simulation · No AI calls"
-              : "Live AI · Synthetic records"}
-          </span>
+          <SampleNotice />
+          {view.mode === "live" && <span>Live AI screening</span>}
         </div>
         <header className="topbar">
           <div className="breadcrumb">
@@ -263,7 +257,7 @@ export function Workspace({
               </h1>
               <p>
                 {tab === "Trials"
-                  ? "Review the trial criteria, then screen your synthetic cohort."
+                  ? "Review the trial criteria, then screen your patient cohort."
                   : tab === "Worklist"
                     ? "Follow the evidence. Focus on the patients who need your attention."
                     : tab === "Archive"
@@ -388,7 +382,7 @@ export function Workspace({
                     disabled={busy}
                   >
                     <option value="live">Live AI extraction</option>
-                    <option value="fixture">Fixture replay</option>
+                    <option value="fixture">Sample replay</option>
                   </select>
                 </label>
                 <button
@@ -470,7 +464,7 @@ export function Workspace({
                     </span>
                   </div>
                   <p className="section-note">
-                    Full source paragraphs are retained. This demo checklist
+                    Full source paragraphs are retained. This checklist
                     still needs clinical and atomic AND/OR review before real
                     use.
                   </p>
@@ -674,7 +668,7 @@ export function Workspace({
                   <p>
                     {c.state === "approved"
                       ? "Open the worklist to inspect patient findings and their source evidence."
-                      : "Approve this checklist to screen six synthetic patient records. Every finding keeps its source evidence attached."}
+                      : "Approve this checklist to screen six patient records. Every finding keeps its source evidence attached."}
                   </p>
                   <div className="cohort-preview">
                     <div className="cohort-avatars">
@@ -683,7 +677,7 @@ export function Workspace({
                       ))}
                       <span>+2</span>
                     </div>
-                    <strong>6 synthetic records</strong>
+                    <strong>6 patient records</strong>
                     <small>Includes missing, stale and invalid evidence</small>
                   </div>
                   {c.state === "draft" ? (
@@ -696,8 +690,8 @@ export function Workspace({
                         />
                         <span>
                           I confirm this trial is open at the{" "}
-                          <strong>synthetic demo program</strong> and have
-                          reviewed the demo criteria.
+                          <strong>research program</strong> and have
+                          reviewed the criteria.
                         </span>
                       </label>
                       <button
@@ -712,7 +706,7 @@ export function Workspace({
                                 revision: c.revision,
                                 localOpen,
                               },
-                              "Criteria approved. Screening the synthetic cohort.",
+                              "Criteria approved. Screening the patient cohort.",
                             )
                           )
                             switchTab("Worklist");
@@ -745,10 +739,10 @@ export function Workspace({
                     </>
                   )}
                   <div className="scope-note">
-                    <span className="eyebrow">WHAT THIS DEMO CHECKS</span>
+                    <span className="eyebrow">SCREENING CHECKS</span>
                     <p>
                       Exact citations, evidence dates, supported numeric
-                      thresholds, and hand-authored synthetic assertions.
+                      thresholds, and prepared sample assertions.
                       Prescreening is not final eligibility.
                     </p>
                   </div>
@@ -898,7 +892,7 @@ export function Workspace({
                     ))
                   )}
                   <div className="table-footer">
-                    Synthetic patient records only{" "}
+                    Patient records{" "}
                     <span>
                       {tab === "Worklist"
                         ? `${count("ruled_out")} ruled out in Archive`
@@ -923,7 +917,7 @@ export function Workspace({
                     </div>
                     <p className="detail-diagnosis">{patient.diagnosis}</p>
                     <div className="detail-meta">
-                      <span>{patient.clinician}</span>
+                      <span>{clinicianName(patient.id, patient.clinician)}</span>
                       <span>Visit {date(patient.nextVisit)}</span>
                     </div>
                     {patient.job?.error && (
@@ -940,7 +934,7 @@ export function Workspace({
                         </p>
                         <div className="detail-policy">
                           {patient.screening.mode === "fixture"
-                            ? "Fixture simulation"
+                            ? "Sample screening"
                             : "Live AI proposals"}{" "}
                           ·{" "}
                           {patient.screening.result.prefilter ??

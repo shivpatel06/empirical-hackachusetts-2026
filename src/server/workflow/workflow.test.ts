@@ -273,6 +273,18 @@ describe("property tests (100 generated cases each)", () => {
       ),
       runs,
     ));
+  it("stale favorable evidence never satisfies its rule", () =>
+    fc.assert(
+      fc.property(fc.integer({ min: 29, max: 500 }), (days) => {
+        const f = fixture();
+        const line = f.patient.chart.find((l) => l.measurement?.analyte === "hemoglobin")!;
+        line.observedAt = new Date(now.getTime() - days * 86400000).toISOString();
+        const result = checkScreening(f.patient, checklist, f.proposals, now, "fixture");
+        expect(result.rules.find((r) => r.ruleId === "hemoglobin")!.status).toBe("unknown");
+        expect(result.status).not.toBe("likely_match");
+      }),
+      runs,
+    ));
   it("stale unfavorable numeric evidence requires review, never an exclusion", () =>
     fc.assert(
       fc.property(

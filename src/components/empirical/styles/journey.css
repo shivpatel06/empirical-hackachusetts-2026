@@ -270,3 +270,18 @@
   cursor: pointer;
   color: var(--label-2);
 }
+
+/* Recording changes presentation only; tools, modes and approvals stay visible. */
+@media (min-width: 801px) {
+  .empirical-app[data-recording] .journey-columns {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 1fr);
+    gap: 24px;
+  }
+}
+.empirical-app[data-recording] .agent-steps strong,
+.empirical-app[data-recording] .agent-steps p {
+  font-size: 15px;
+}
+.empirical-app[data-recording] .journey-agent-head h2 {
+  font-size: 21px;
+}

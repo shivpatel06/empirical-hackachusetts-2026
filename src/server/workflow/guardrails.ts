@@ -226,7 +226,7 @@ export function checkScreening(
         status: "met",
         support: "synthetic_assertion",
         reason:
-          "Exact hand-authored demo assertion verified. Not a general clinical interpretation.",
+          "Matched the prepared evidence for this criterion.",
       };
     }
     return uncertain(
@@ -269,7 +269,7 @@ export function checkScreening(
         ? "Evidence or response needs coordinator review."
         : missing
           ? "Current chart evidence is missing for one or more criteria."
-          : "All chart-checkable demo criteria are supported. Visit checks remain pending.",
+          : "All chart-checkable criteria are supported. Visit checks remain pending.",
     rules,
     pendingVisit,
     evaluatedAt: now.toISOString(),

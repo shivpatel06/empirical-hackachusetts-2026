@@ -5,7 +5,7 @@ import type {
   PatientView,
   WorkflowView,
 } from "../../lib/workflow";
-import { formatDate, patientName, patientStatus } from "./presentation";
+import { formatDate, patientName, patientStatus, clinicianName, recordTitle } from "./presentation";
 
 const needsAttention = (rule: CheckedRule) =>
   rule.review || rule.status === "unknown" || rule.status === "not_met";
@@ -73,7 +73,7 @@ export function EvidenceWorkspace({
                 ? "Not screened"
                 : screening.mode === "live"
                   ? "Live AI proposals"
-                  : "Fixture simulation"}
+                  : "Sample screening"}
             </span>
           </div>
           <p className="integration-result">
@@ -98,7 +98,7 @@ export function EvidenceWorkspace({
           <dl className="cw-facts">
             <div>
               <dt>Clinician</dt>
-              <dd>{patient.clinician}</dd>
+              <dd>{clinicianName(patient.id, patient.clinician)}</dd>
             </div>
             <div>
               <dt>Next visit</dt>
@@ -158,7 +158,7 @@ export function EvidenceWorkspace({
           <h2>No screening result yet</h2>
           <p>
             Review and approve the current trial criteria to screen this
-            synthetic cohort.
+            patient cohort.
           </p>
           <a className="btn btn--primary" href="/criteria">
             Review checklist
@@ -286,10 +286,10 @@ export function EvidenceWorkspace({
                     </div>
                   ))}
                   {rule.support === "synthetic_assertion" && (
-                    <p className="cw-sub">
-                      Validated against a hand-authored synthetic assertion, not
-                      clinical validation.
-                    </p>
+                    <details className="cw-sub">
+                      <summary>Evidence method</summary>
+                      <p>Matched to a prepared sample assertion. This is not independent clinical validation.</p>
+                    </details>
                   )}
                 </section>
                 {rule.citations.map((citation, index) => {
@@ -316,7 +316,7 @@ export function EvidenceWorkspace({
                       {line ? (
                         <>
                           <p className="cw-sub">
-                            {line.source} · Observed{" "}
+                            {recordTitle(line.source, line.id)} · Observed{" "}
                             {formatDate(line.observedAt)}
                           </p>
                           {line.measurement && (
@@ -331,6 +331,8 @@ export function EvidenceWorkspace({
                           )}
                           <details>
                             <summary>Read full source</summary>
+                            <p className="cw-sub">{line.source}</p>
+                            <code className="integration-line-id">{citation.lineId}</code>
                             <p className="integration-chart-text">
                               {line.text}
                             </p>
@@ -341,9 +343,6 @@ export function EvidenceWorkspace({
                           No corresponding line exists in this patient's chart.
                         </p>
                       )}
-                      <code className="integration-line-id">
-                        {citation.lineId}
-                      </code>
                     </section>
                   );
                 })}
@@ -359,7 +358,7 @@ export function EvidenceWorkspace({
               <div className="disclosure-body">
                 {patient.chart.map((line) => (
                   <article className="integration-chart-line" key={line.id}>
-                    <strong>{line.source}</strong>
+                    <strong>{recordTitle(line.source, line.id)}</strong>
                     <p className="cw-sub">
                       Observed {formatDate(line.observedAt)} · Revision{" "}
                       {line.revision}
